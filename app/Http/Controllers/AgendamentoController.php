@@ -12,7 +12,16 @@ class AgendamentoController extends Controller
      * 
      * 
      */
-
+    public function excluir(Request $request)
+    {
+        $ids = $request->ids ?? [];
+        try {
+            Agendamento::whereIn('id', $ids)->delete();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
 
     public function index(Request $request)
     {

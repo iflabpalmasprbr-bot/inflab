@@ -413,6 +413,28 @@
         background-color: #2ecc71;
     }
 
+    .agendamento-info p {
+        word-wrap: break-word;
+    }
+
+    @media (max-width: 480px) {
+        .agendamento-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .agendamento-actions button,
+        .agendamento-actions input[type="checkbox"] {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .agendamento-card {
+            padding: 12px;
+        }
+    }
+
     .btn-recusar {
         padding: 8px 16px;
         font-size: 14px;
