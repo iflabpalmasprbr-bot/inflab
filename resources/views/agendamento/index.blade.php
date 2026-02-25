@@ -52,7 +52,7 @@
                                     class="
         @if (strtolower($ag->status) == 'aceito') status-aceito 
         @elseif(strtolower($ag->status) == 'recusado') status-recusado 
-        @elseif(strtolower($ag->status) == 'em andamento') status-andamento @endif
+        @elseif(strtolower($ag->status) == 'aberto') status-andamento @endif
     ">
                                     {{ $ag->status }}
                                 </span>
@@ -209,6 +209,18 @@
         align-items: center;
         gap: 10px;
         margin: 20px 0;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.5);
+    }
+
+    @media (min-width: 768px) {
+
+        .minha-form-class input[type="date"],
+        .minha-form-class button {
+            width: auto;
+        }
     }
 
 

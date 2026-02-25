@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eventos - IFLAB | IFPR Palmas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
     <style>
         :root {
             --ifpr-blue: #0056a3;
@@ -547,7 +550,7 @@
     <!--Eventos-->
     <style>
         .services {
-            background:#c2dcff;
+            background: #c2dcff;
             /* 🔵 Exemplo: azul bem claro */
         }
 
@@ -694,8 +697,9 @@
             flex-wrap: wrap;
             margin-top: 50px;
         }
-        .booking{
-            background-color:#eff7ff;
+
+        .booking {
+            background-color: #eff7ff;
         }
 
         .booking-steps .step {
@@ -890,8 +894,9 @@
                 flex-direction: column;
             }
         }
-        #contato{
-            background-color:#9bc6ff;
+
+        #contato {
+            background-color: #9bc6ff;
         }
     </style>
 
@@ -983,6 +988,7 @@
         // Inicializa
         updateCarousel();
     </script>
+
 
 
     @include('layouts.footer')
