@@ -1,45 +1,96 @@
 @include('layouts.cabecalho')
 
 <div class="page-wrapper">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- ===== BOTÃO VOLTAR ===== -->
     <div class="linha-voltar">
         <a href="{{ route('home') }}" class="btn btn-voltar">← Voltar para Home</a>
     </div>
-
+    @php
+        $specialEmails = ['fernandes.junior@ifpr.edu.br', 'jean.gentilini@ifpr.edu.br', 'carolbrm265@gmail.com'];
+        $userEmail = strtolower(Auth::user()->email);
+        $showAll = in_array($userEmail, $specialEmails);
+    @endphp
     <h2 class="titulo-pagina">Agendamentos em Aguardo</h2>
-
+    @if (in_array(strtolower(Auth::user()->email), [
+            'fernandes.junior@ifpr.edu.br',
+            'jean.gentilini@ifpr.edu.br',
+            'carolbrm265@gmail.com',
+        ]))
+        <form class="minha-form-class" action="{{ route('agendamentos.index') }}" method="GET">
+            <input type="date" id="data_inicio" name="data_inicio" value="{{ request('data_inicio') }}">
+            <input type="date" id="data_fim" name="data_fim" value="{{ request('data_fim') }}">
+            <button type="submit" class="">Buscar</button>
+        </form>
+    @endif
     @if ($agendamentos->isEmpty())
         <p class="nenhum">Nenhum agendamento encontrado.</p>
     @else
         <div class="agendamento-container">
 
+
+
             @foreach ($agendamentos as $ag)
-                <div class="agendamento-card">
+                @if ($showAll || strtolower($ag->email) == $userEmail)
+                    <div class="agendamento-card">
+                        <h3 class="agendamento-nome">{{ $ag->nome }}</h3>
 
-                    <h3 class="agendamento-nome">{{ $ag->nome }}</h3>
+                        <div class="agendamento-info">
+                            <p><strong>E-mail:</strong> {{ $ag->email }}</p>
+                            <p><strong>Telefone:</strong> {{ $ag->telefone }}</p>
+                            <p><strong>Categoria:</strong> {{ $ag->categoria }}</p>
+                            <p><strong>Serviço:</strong> {{ $ag->servico }}</p>
+                            <p><strong>Data:</strong>
+                                {{ \Carbon\Carbon::parse($ag->data_desejada)->format('d/m/Y') }}
+                            </p>
+                            <p><strong>Hora:</strong> {{ $ag->horario_desejado }}</p>
+                            <p><strong>Projeto:</strong> {{ $ag->descricao_projeto }}</p>
+                            <p>
+                                <strong>Status:</strong>
 
-                    <div class="agendamento-info">
-                        <p><strong>E-mail:</strong> {{ $ag->email }}</p>
-                        <p><strong>Telefone:</strong> {{ $ag->telefone }}</p>
-                        <p><strong>Categoria:</strong> {{ $ag->categoria }}</p>
-                        <p><strong>Serviço:</strong> {{ $ag->servico }}</p>
-                        <p><strong>Data:</strong> {{ \Carbon\Carbon::parse($ag->data_desejada)->format('d/m/Y') }}</p>
-                        <p><strong>Hora:</strong> {{ $ag->horario_desejado }}</p>
-                        <p><strong>Projeto:</strong> {{ $ag->descricao_projeto }}</p>
+                                <span
+                                    class="
+        @if (strtolower($ag->status) == 'aceito') status-aceito 
+        @elseif(strtolower($ag->status) == 'recusado') status-recusado 
+        @elseif(strtolower($ag->status) == 'em andamento') status-andamento @endif
+    ">
+                                    {{ $ag->status }}
+                                </span>
+                            </p>
+                        </div>
                     </div>
+                @endif
 
+                @if (in_array(strtolower(Auth::user()->email), [
+                        'fernandes.junior@ifpr.edu.br',
+                        'jean.gentilini@ifpr.edu.br',
+                        'carolbrm265@gmail.com',
+                    ]))
                     <!-- ===== BOTÕES ===== -->
+
                     <div class="agendamento-actions">
-                        <input type="checkbox" class="selecionar-agendamento" data-id="{{ $ag->id }}"> Selecionar
+                        <input type="checkbox" class="selecionar-agendamento" data-id="{{ $ag->id }}">
+                        Selecionar
+
+                        <button class="btn-aceitar" data-id="{{ $ag->id }}">
+                            <i class="fa fa-check"></i> Aceitar
+                        </button>
+
+                        <button class="btn-recusar" data-id="{{ $ag->id }}">
+                            <i class="fa fa-times"></i> Recusar
+                        </button>
+
                         <button class="btn-excluir" data-id="{{ $ag->id }}">Excluir</button>
+
                     </div>
-
-                </div>
+                @endif
             @endforeach
-
         </div>
-    @endif
+
+
+</div>
+@endif
+
 
 </div>
 <script defer>
@@ -75,11 +126,138 @@
             }
         });
     });
+
+    document.querySelectorAll('.btn-aceitar').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            if (confirm('Deseja aceitar este agendamento?')) {
+                fetch('{{ route('agendamento.aceitar') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            ids: [id]
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Agendamento aceito!');
+                            this.closest('.agendamento-card').remove();
+                        } else {
+                            alert('Erro ao aceitar o agendamento!');
+                        }
+                    })
+                    .catch(() => alert('Erro na requisição!'));
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-recusar').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            if (confirm('Deseja recusar este agendamento?')) {
+                fetch('{{ route('agendamento.recusar') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            ids: [id]
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Agendamento recusado!');
+                            this.closest('.agendamento-card').remove();
+                        } else {
+                            alert('Erro ao recusar o agendamento!');
+                        }
+                    })
+                    .catch(() => alert('Erro na requisição!'));
+            }
+        });
+    });
 </script>
 
 
 
 <style>
+    .status-aceito {
+        color: green;
+        font-weight: bold;
+    }
+
+    .status-recusado {
+        color: red;
+        font-weight: bold;
+    }
+
+    .status-andamento {
+        color: blue;
+        font-weight: bold;
+    }
+
+    /* Container do formulário */
+    form.minha-form-class {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin: 20px 0;
+    }
+
+
+    /* Campos de data */
+    form input[type="date"] {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+
+    /* Foco nos inputs */
+    form input[type="date"]:focus {
+        border-color: #007bff;
+        /* azul claro */
+        outline: none;
+    }
+
+    /* Botão de busca */
+    form button {
+        padding: 8px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+
+    /* Hover no botão */
+    form button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Responsividade */
+    @media (max-width: 480px) {
+        form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        form input[type="date"],
+        form button {
+            width: 100%;
+        }
+    }
+
     /* --- Layout Geral --- */
     .page-wrapper {
         max-width: 1100px;
@@ -217,5 +395,42 @@
 
     .btn-excluir:hover {
         background-color: #e74c3c;
+    }
+
+    .btn-aceitar {
+        padding: 8px 16px;
+        font-size: 14px;
+        background-color: #27ae60;
+        /* verde */
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .btn-aceitar:hover {
+        background-color: #2ecc71;
+    }
+
+    .btn-recusar {
+        padding: 8px 16px;
+        font-size: 14px;
+        background-color: #e67e22;
+        /* laranja */
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .btn-recusar:hover {
+        background-color: #d35400;
+    }
+
+    .btn-aceitar i,
+    .btn-recusar i {
+        margin-right: 6px;
     }
 </style>

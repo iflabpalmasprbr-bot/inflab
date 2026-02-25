@@ -19,5 +19,6 @@ class Agendamento extends Model
         'data_desejada',
         'horario_desejado',
         'descricao_projeto',
+        'status',
     ];
 }

@@ -11,6 +11,34 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
+
+/*
+|--------------------------------------------------------------------------
+| Rotas de Autenticação
+|--------------------------------------------------------------------------
+|
+| Este arquivo define todas as rotas relacionadas à autenticação
+| de usuários da aplicação.
+|
+| As rotas estão organizadas em dois grupos principais:
+|
+| 1) Middleware 'guest':
+|    - Acessível apenas para usuários NÃO autenticados.
+|    - Inclui: registro, login, recuperação e redefinição de senha.
+|
+| 2) Middleware 'auth':
+|    - Acessível apenas para usuários autenticados.
+|    - Inclui: verificação de e-mail, confirmação de senha,
+|      atualização de senha e logout.
+|
+| Cada rota aponta para um Controller específico responsável
+| por processar a requisição (ex: login, registro, etc).
+|
+| Esse padrão segue a estrutura padrão do Laravel Breeze,
+| Jetstream ou sistema de autenticação padrão do Laravel.
+|
+*/
+
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');

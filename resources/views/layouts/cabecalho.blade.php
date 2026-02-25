@@ -744,27 +744,51 @@
                                 <button type="submit">Log out</button>
                             </form>
                         </div>
-                        @auth
-                            @if (in_array(strtolower(Auth::user()->email), [
-                                    'carolbrm265@gmail.com',
-                                    'fernandes.junior@ifpr.edu.br',
-                                    'jean.gentilini@ifpr.edu.br',
-                                ]))
-                                @php
-                                    $countAg = \App\Models\Agendamento::count();
-                                @endphp
 
-                                <li class="menu-notificacao">
-                                    <a href="{{ route('agendamentos.index') }}">
-                                        <i class="fas fa-bell"></i>
-                                        @if ($countAg > 0)
-                                            <span class="badge">{{ $countAg }}</span>
-                                        @endif
-                                    </a>
-                                </li>
-                            @endif
-                        @endauth
+                        @php
+                            $countAg = \App\Models\Agendamento::count();
+                        @endphp
 
+                        <li class="menu-notificacao">
+                            <a href="{{ route('agendamentos.index') }}">
+                                <i class="fas fa-bell"></i>
+                                @if ($countAg > 0)
+                                    <span class="badge">{{ $countAg }}</span>
+                                @endif
+                            </a>
+                        </li>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const badge = document.querySelector('.menu-notificacao .badge');
+                                const linkNotificacao = document.querySelector('.menu-notificacao a');
+
+                                // Pegamos o total de notificações do backend
+                                const totalNotificacoes = {{ $countAg ?? 0 }};
+
+                                // Pegamos do localStorage quantas notificações já foram vistas
+                                let vistas = parseInt(localStorage.getItem('notificacoesVistas') || '0');
+
+                                // Se houver novas notificações, mostra o badge com a diferença
+                                if (totalNotificacoes > vistas) {
+                                    if (badge) {
+                                        badge.style.display = 'inline-block';
+                                        badge.textContent = totalNotificacoes - vistas;
+                                    }
+                                } else {
+                                    // Se não houver novas notificações, esconde o badge
+                                    if (badge) badge.style.display = 'none';
+                                }
+
+                                // Ao clicar na notificação
+                                if (linkNotificacao) {
+                                    linkNotificacao.addEventListener('click', () => {
+                                        // Marca todas as notificações como vistas
+                                        localStorage.setItem('notificacoesVistas', totalNotificacoes);
+                                        if (badge) badge.style.display = 'none';
+                                    });
+                                }
+                            });
+                        </script>
                         <style>
                             .nav-logout {
                                 display: flex;
@@ -817,6 +841,8 @@
                     </li>
                 </ul>
             </nav>
+
+
 
             <style>
                 nav ul {

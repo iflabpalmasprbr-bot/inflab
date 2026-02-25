@@ -64,7 +64,9 @@ Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat
 Route::middleware('auth')->group(function () {
     Route::get('/agendamentos', [AgendamentoController::class, 'index'])->name('agendamentos.index');
     Route::post('/agendamento/salvar', [AgendamentoController::class, 'store'])->name('agendamento.store');
-    Route::post('/agendamento/excluir', [AgendamentoController::class, 'destroy'])->name('agendamento.excluir');
+    Route::post('/agendamento/excluir', [AgendamentoController::class, 'excluir'])->name('agendamento.excluir');
+    Route::post('/agendamento/aceitar', [AgendamentoController::class, 'aceitar'])->name('agendamento.aceitar');
+    Route::post('/agendamento/recusar', [AgendamentoController::class, 'recusar'])->name('agendamento.recusar');
 });
 
 

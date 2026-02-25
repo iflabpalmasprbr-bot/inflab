@@ -1,5 +1,21 @@
 @include('layouts.cabecalho')
-
+@php
+    /*
+|--------------------------------------------------------------------------
+| Página do Fórum
+|--------------------------------------------------------------------------
+|
+| Esta view exibe o fórum da aplicação, permitindo que os usuários:
+| - Visualizem todos os tópicos existentes
+| - Pesquisem e filtrem tópicos por categoria
+| - Criem novos tópicos (limite de 1 por semana para usuários comuns)
+|
+| Administradores podem selecionar e excluir múltiplos tópicos.
+| A página combina lista de tópicos e formulário em um layout responsivo,
+| com estilos e scripts para melhor interatividade.
+|
+*/
+@endphp
 <style>
     /* ===== CONFIGURAÇÃO GLOBAL ===== */
     .forum-container,

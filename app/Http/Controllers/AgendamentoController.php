@@ -9,10 +9,25 @@ class AgendamentoController extends Controller
 {
     /**
      * Exibe todos os agendamentos.
+     * 
+     * 
      */
-    public function index()
+
+
+    public function index(Request $request)
     {
-        $agendamentos = Agendamento::orderBy('id', 'desc')->get();
+        $query = Agendamento::query();
+
+        // Filtra apenas se os campos estiverem preenchidos
+        if ($request->filled('data_inicio') && $request->filled('data_fim')) {
+            $query->whereBetween('data_desejada', [$request->data_inicio, $request->data_fim]);
+        } else {
+            // Se nenhum intervalo for fornecido, mostra a partir de hoje
+            $query->where('data_desejada', '>=', now()->format('Y-m-d'));
+        }
+
+        $agendamentos = $query->orderBy('id', 'desc')->get();
+
         return view('agendamento.index', compact('agendamentos'));
     }
 
@@ -49,6 +64,7 @@ class AgendamentoController extends Controller
             'data_desejada' => $validated['date'],
             'horario_desejado' => $validated['time'],
             'descricao_projeto' => $validated['project'],
+            'status' => 'Aberto', // valor padrão inicial
         ]);
 
         return redirect()->route('home')->with('success', 'Agendamento realizado com sucesso!');
@@ -125,5 +141,36 @@ class AgendamentoController extends Controller
     public function livre()
     {
         // Pode implementar algo futuro aqui
+    }
+
+    public function aceitar(Request $request)
+    {
+
+        $ids = $request->ids ?? [];
+
+        foreach ($ids as $id) {
+            $agendamento = Agendamento::find($id);
+            if ($agendamento) {
+                $agendamento->status = 'Aceito'; // atualiza o status
+                $agendamento->save();
+            }
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function recusar(Request $request)
+    {
+        $ids = $request->ids ?? [];
+
+        foreach ($ids as $id) {
+            $agendamento = Agendamento::find($id);
+            if ($agendamento) {
+                $agendamento->status = 'Recusado'; // atualiza o status
+                $agendamento->save();
+            }
+        }
+
+        return response()->json(['success' => true]);
     }
 }
