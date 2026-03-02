@@ -50,10 +50,10 @@
 
 
             @foreach ($agendamentos as $ag)
-                @if ($showAll || strtolower($ag->email) == $userEmail)
+                @php $emailAg = trim(strtolower($ag->email)); @endphp
+                @if ($showAll || $emailAg == $userEmail)
                     <div class="agendamento-card">
                         <h3 class="agendamento-nome">{{ $ag->nome }}</h3>
-
                         <div class="agendamento-info">
                             <p><strong>E-mail:</strong> {{ $ag->email }}</p>
                             <p><strong>Telefone:</strong> {{ $ag->telefone }}</p>
@@ -67,35 +67,27 @@
                                 <strong>Status:</strong>
                                 <span
                                     class="
-                        @if (strtolower($ag->status) == 'aceito') status-aceito 
-                        @elseif(strtolower($ag->status) == 'recusado') status-recusado 
-                        @elseif(strtolower($ag->status) == 'aberto') status-andamento @endif
+                        @if ($ag->status == 'aceito') status-aceito
+                        @elseif($ag->status == 'recusado') status-recusado
+                        @elseif($ag->status == 'aberto') status-andamento @endif
                     ">
                                     {{ $ag->status }}
                                 </span>
                             </p>
                         </div>
 
-                        {{-- ===== BOTÕES SOMENTE PARA ADM ===== --}}
+                        {{-- Botões apenas para ADM --}}
                         @if ($showAll)
                             <div class="agendamento-actions">
                                 <input type="checkbox" class="selecionar-agendamento" data-id="{{ $ag->id }}">
                                 Selecionar
-
-                                <button class="btn-aceitar" data-id="{{ $ag->id }}">
-                                    <i class="fa fa-check"></i> Aceitar
-                                </button>
-
-                                <button class="btn-recusar" data-id="{{ $ag->id }}">
-                                    <i class="fa fa-times"></i> Recusar
-                                </button>
-
-                                <button class="btn-excluir" data-id="{{ $ag->id }}">
-                                    Excluir
-                                </button>
+                                <button class="btn-aceitar" data-id="{{ $ag->id }}"><i class="fa fa-check"></i>
+                                    Aceitar</button>
+                                <button class="btn-recusar" data-id="{{ $ag->id }}"><i class="fa fa-times"></i>
+                                    Recusar</button>
+                                <button class="btn-excluir" data-id="{{ $ag->id }}">Excluir</button>
                             </div>
                         @endif
-
                     </div>
                 @endif
             @endforeach
