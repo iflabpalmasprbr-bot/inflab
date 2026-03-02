@@ -182,4 +182,17 @@ class AgendamentoController extends Controller
 
         return response()->json(['success' => true]);
     }
+    public function agenda_semana()
+    {
+        $inicioSemana = now()->startOfWeek()->toDateString();
+        $fimSemana = now()->endOfWeek()->toDateString();
+
+        $agendamentos = Agendamento::whereBetween('data_desejada', [$inicioSemana, $fimSemana])
+            ->select('data_desejada', 'horario_desejado', 'descricao_projeto') // ✅ adiciona aqui
+            ->where('status', 'Aceito')
+            ->get();
+
+        return response()->json($agendamentos);
+    }
+    
 }

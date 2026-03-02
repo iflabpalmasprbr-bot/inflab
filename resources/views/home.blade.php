@@ -8,6 +8,7 @@
     <title>Eventos - IFLAB | IFPR Palmas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
     <style>
@@ -691,6 +692,74 @@
     </section>
 
     <style>
+        /* CSS para o texto explicativo */
+        .help-text {
+            font-size: 0.875rem;
+            /* tamanho menor que o normal */
+            color: #6c757d;
+            /* cinza suave */
+            margin-top: 4px;
+            /* espaço acima */
+            margin-bottom: 8px;
+            /* espaço abaixo */
+            font-style: italic;
+            /* deixa em itálico */
+        }
+
+        #mensagem-sucesso {
+            display: none;
+            /* inicialmente escondida */
+            margin-top: 20px;
+            text-align: center;
+            background-color: #d1ecf1;
+            /* azul claro */
+            border: 1px solid #bee5eb;
+            /* borda azul suave */
+            color: #12545f;
+            /* texto azul escuro */
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+            /* animação ao aparecer */
+        }
+
+        /* Animação de fade */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsividade */
+        @media (max-width: 480px) {
+            #mensagem-sucesso {
+                font-size: 14px;
+                padding: 12px 15px;
+            }
+        }
+
+        /* Botão opcional de fechar */
+        #mensagem-sucesso .fechar {
+            display: inline-block;
+            margin-left: 10px;
+            cursor: pointer;
+            color: #0c5460;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        #mensagem-sucesso .fechar:hover {
+            color: #000;
+        }
+
         .booking-steps {
             display: flex;
             justify-content: space-between;
@@ -758,10 +827,101 @@
         }
     </style>
 
-
-
-
     <div class="booking-form">
+
+        <!-- Aviso acima do formulário de agendamento -->
+        <div class="alert-agendamento">
+            <strong class="strong-1">Atenção:</strong> Após enviar seu agendamento, fique de olho na <em>barra de
+                notificações</em>.
+            Seu pedido ficará com o status <span class="status-aberto">Em Análise (Aberto)</span>.
+            Assim que o professor responsável aprovar ou recusar, o status será atualizado, e seu horário aparecerá na
+            tabela de agendamentos.
+        </div>
+
+        <style>
+            .strong-1 {
+                color: rgb(51, 51, 51);
+            }
+
+            .alert-agendamento {
+                background-color: #fff3cd;
+                /* amarelo claro */
+                border: 1px solid #ffeeba;
+                /* borda amarela */
+                color: #725a17;
+                /* texto escuro */
+                padding: 15px 20px;
+                border-radius: 8px;
+                font-size: 0.95rem;
+                margin-bottom: 25px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            }
+
+            .alert-agendamento .status-aberto {
+                font-weight: bold;
+                color: #0004d3;
+            }
+
+            @media (max-width: 600px) {
+                .alert-agendamento {
+                    font-size: 0.9rem;
+                    padding: 12px 15px;
+                }
+            }
+        </style>
+        <style>
+            .mensagem-sucesso {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: #0078d4;
+                /* azul IFPR */
+                color: white;
+                padding: 16px 24px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 16px;
+                animation: slideDown 0.4s ease;
+                transition: opacity 0.5s ease, transform 0.5s ease;
+            }
+
+            .mensagem-sucesso.ocultar {
+                opacity: 0;
+                transform: translate(-50%, -20px);
+            }
+
+            .mensagem-sucesso .fechar {
+                background: transparent;
+                border: none;
+                font-size: 20px;
+                color: white;
+                cursor: pointer;
+                font-weight: bold;
+                line-height: 1;
+                margin-left: 20px;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, 0);
+                }
+            }
+        </style>
+        <div id="mensagem-sucesso" class="mensagem-sucesso" style="display:none;">
+            Seu agendamento foi enviado com sucesso!
+            <button onclick="fecharMensagem()" class="fechar">&times;</button>
+        </div>
         <h3 style="text-align: center; color: #0056a3; margin-bottom: 30px;">Formulário de Agendamento</h3>
 
         <form id="bookingForm" action="{{ route('agendamento.store') }}" method="POST">
@@ -813,14 +973,22 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="date">Data Desejada</label>
-                    <input type="date" id="date" name="date" required>
+                    <input type="date" id="date" name="date" required readonly>
+                    <small class="form-text text-muted">
+                        Este campo será preenchido conforme o calendário semanal. Escolha a data desejada.
+                    </small>
                 </div>
                 <div class="form-group">
                     <label for="time">Horário Desejado</label>
-                    <input type="time" id="time" name="time" required>
+                    <input type="time" id="time" name="time" required readonly>
+                    <small class="form-text text-muted">
+                        este campo sera prenchido conforme o calendário semanal. Escolha a hora desejada.
+                    </small>
                 </div>
             </div>
-
+            <button id="btnTestarAjax" class="btn btn-primary mb-3">
+                <i class="bi bi-calendar-event"></i> calendário semanal
+            </button>
             <div class="form-group">
                 <label for="project">Descrição do Projeto</label>
                 <textarea id="project" name="project"
@@ -829,9 +997,33 @@
 
             <div style="text-align: center;">
                 <button type="submit" class="btn-primary">Enviar Solicitação</button>
+                {{-- Div para mensagem de confirmação --}}
+
             </div>
         </form>
     </div>
+
+    <script>
+        document.getElementById('bookingForm').addEventListener('submit', function() {
+            const msg = document.getElementById('mensagem-sucesso');
+            msg.style.display = 'flex'; // mostra a mensagem
+            setTimeout(() => msg.style.display = 'none', 3000); // some após 3s
+        });
+    </script>
+    <script>
+        document.getElementById('form-agendamento').addEventListener('submit', function(event) {
+            // Evita envio tradicional para demonstrar a mensagem
+            // event.preventDefault(); // descomente se quiser apenas mensagem sem enviar para backend
+
+            // Exibe a mensagem de sucesso
+            document.getElementById('mensagem-sucesso').style.display = 'block';
+
+            // Opcional: scroll até a mensagem
+            document.getElementById('mensagem-sucesso').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    </script>
     <style>
         .booking-form {
             background: #ffffff;
@@ -942,7 +1134,6 @@
         </div>
     </section>
 
-
     <script defer>
         const track = document.querySelector('.carousel-track');
         const items = document.querySelectorAll('.carousel-item');
@@ -988,11 +1179,8 @@
         // Inicializa
         updateCarousel();
     </script>
-
-
-
     @include('layouts.footer')
+    @include('home_partials.modal_agendamentos')
+
 
 </body>
-
-</html>

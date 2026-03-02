@@ -5,8 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\ChatController;
-use App\Http\Controllers\BookingController;
+
 use App\Http\Controllers\AgendamentoController;
 use App\Http\Controllers\ForumController;
 use App\Models\Evento;
@@ -53,9 +52,6 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 // =======================================
 // CHAT
 // =======================================
-Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
-Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
 
 
 // =======================================
@@ -102,3 +98,6 @@ Route::middleware('auth')->prefix('forum')->group(function () {
     Route::delete('/destroy-multiple', [ForumController::class, 'destroyMultiple'])
         ->name('forum.destroyMultiple');
 });
+//
+Route::get('/agenda/semana', [AgendamentoController::class, 'agenda_semana'])
+    ->name('agenda.semana');
