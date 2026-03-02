@@ -59,8 +59,7 @@
                             <p><strong>Telefone:</strong> {{ $ag->telefone }}</p>
                             <p><strong>Categoria:</strong> {{ $ag->categoria }}</p>
                             <p><strong>Serviço:</strong> {{ $ag->servico }}</p>
-                            <p><strong>Data:</strong>
-                                {{ \Carbon\Carbon::parse($ag->data_desejada)->format('d/m/Y') }}
+                            <p><strong>Data:</strong> {{ \Carbon\Carbon::parse($ag->data_desejada)->format('d/m/Y') }}
                             </p>
                             <p><strong>Hora:</strong> {{ $ag->horario_desejado }}</p>
                             <p><strong>Projeto:</strong> {{ $ag->descricao_projeto }}</p>
@@ -71,7 +70,7 @@
                         @if (strtolower($ag->status) == 'aceito') status-aceito 
                         @elseif(strtolower($ag->status) == 'recusado') status-recusado 
                         @elseif(strtolower($ag->status) == 'aberto') status-andamento @endif
-                        ">
+                    ">
                                     {{ $ag->status }}
                                 </span>
                             </p>
