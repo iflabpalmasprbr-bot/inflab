@@ -191,7 +191,7 @@ class AgendamentoController extends Controller
             ->select('data_desejada', 'horario_desejado', 'descricao_projeto') // ✅ adiciona aqui
             ->where('status', 'Aceito')
             ->get();
-
+//comntario
         return response()->json($agendamentos);
     }
     
