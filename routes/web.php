@@ -101,3 +101,5 @@ Route::middleware('auth')->prefix('forum')->group(function () {
 //
 Route::get('/agenda/semana', [AgendamentoController::class, 'agenda_semana'])
     ->name('agenda.semana');
+Route::post('/comentario-update', [AgendamentoController::class, 'update_comentario'])
+    ->name('update.comentario');

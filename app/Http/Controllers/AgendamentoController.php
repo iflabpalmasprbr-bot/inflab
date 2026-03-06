@@ -74,6 +74,7 @@ class AgendamentoController extends Controller
             'horario_desejado' => $validated['time'],
             'descricao_projeto' => $validated['project'],
             'status' => 'Aberto', // valor padrão inicial
+            'comentario' => $request->comentario, // valor padrão inicial
         ]);
 
         return redirect()->route('home')->with('success', 'Agendamento realizado com sucesso!');
@@ -191,8 +192,24 @@ class AgendamentoController extends Controller
             ->select('data_desejada', 'horario_desejado', 'descricao_projeto') // ✅ adiciona aqui
             ->where('status', 'Aceito')
             ->get();
-//comntario
+        //comntario
         return response()->json($agendamentos);
     }
-    
+    public function update_comentario(Request $request)
+    {
+        // Busca o agendamento pelo ID enviado na requisição
+        $agendamento = Agendamento::find($request->id);
+
+        if ($agendamento) {
+            // Salva o comentário corrigido
+            $agendamento->comentario = $request->comentario;
+            $agendamento->save();
+
+            // Redireciona de volta com uma mensagem de sucesso
+            return back()->with('success', 'Comentário atualizado com sucesso!');
+        }
+
+        // Se não encontrar, volta com uma mensagem de erro
+        return back()->with('error', 'Agendamento não encontrado.');
+    }
 }

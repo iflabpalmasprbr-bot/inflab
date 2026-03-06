@@ -74,6 +74,7 @@
                                     {{ $ag->status }}
                                 </span>
                             </p>
+
                         </div>
 
                         {{-- ===== BOTÕES SOMENTE PARA ADM ===== --}}
@@ -97,6 +98,33 @@
                         @endif
 
                     </div>
+                    <div class="admin-comentario-box">
+
+                        <div class="admin-comentario-header">
+                            <span class="comentario-icon"><i
+                                    class="fa-solid fa-comment-dots comentario-icon"></i></span>
+                            <span class="comentario-title">Comentário do Professor(a)</span>
+                        </div>
+
+                        @if ($showAll)
+                            <form action="{{ route('update.comentario') }}" method="POST" class="comentario-form">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ $ag->id }}">
+
+                                <input type="text" name="comentario" class="comentario-input"
+                                    value="{{ $ag->comentario }}" placeholder="Digite um comentário administrativo...">
+
+                                <button type="submit" class="comentario-btn">
+                                    💾 Salvar
+                                </button>
+                            </form>
+                        @else
+                            <div class="comentario-texto">
+                                {{ $ag->comentario ?? 'Nenhum comentário registrado.' }}
+                            </div>
+                        @endif
+
+                    </div>
                 @endif
             @endforeach
 
@@ -106,6 +134,70 @@
         </div>
     @endif
     <style>
+        .admin-comentario-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #2563eb;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .admin-comentario-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .comentario-icon {
+            font-size: 18px;
+            margin-right: 6px;
+        }
+
+        .comentario-title {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .comentario-form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .comentario-input {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .comentario-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 3px rgba(37, 99, 235, 0.3);
+        }
+
+        .comentario-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .comentario-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .comentario-texto {
+            color: #374151;
+            padding: 6px 2px;
+        }
+
         body {
             opacity: 0;
             transition: opacity 0.3s ease-in;
