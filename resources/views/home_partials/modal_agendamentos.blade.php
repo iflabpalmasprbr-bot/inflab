@@ -1,0 +1,399 @@
+<!-- ===================== TOAST ===================== -->
+<div id="mensagemSucesso" class="toast-sucesso">
+    <i class="bi bi-check-circle-fill"></i> Campos preenchidos com sucesso!
+
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div id="agendaModal" class="custom-modal">
+    <div class="custom-modal-overlay"></div>
+
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h5 id="modalTitle">
+                <i class="bi bi-calendar-event-fill" style="margin-right: 8px;"></i>
+                Agenda -
+            </h5>
+            <button class="custom-close">&times;</button>
+        </div>
+
+        <div class="custom-modal-body">
+            <div class="table-responsive">
+                <table class="agenda-table">
+                    <thead>
+                        <tr>
+                            <th>Horário</th>
+                            <th>Segunda</th>
+                            <th>Terça</th>
+                            <th>Quarta</th>
+                            <th>Quinta</th>
+                            <th>Sexta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $horas = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
+                        @endphp
+                        @foreach ($horas as $hora)
+                            <tr>
+                                <td class="hora"><strong>{{ $hora }}</strong></td>
+                                @for ($dia = 1; $dia <= 5; $dia++)
+                                    <td class="agenda-celula" data-dia="{{ $dia }}"
+                                        data-hora="{{ $hora }}">
+                                        <button type="button" class="btn-agendar">Marcar</button>
+                                    </td>
+                                @endfor
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== CSS ===================== -->
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .custom-modal-header h5 i {
+        font-size: 2rem;
+        /* aumenta o tamanho do ícone */
+        vertical-align: middle;
+        /* centraliza com o texto */
+        color: #1f4e79;
+        /* cor opcional */
+    }
+
+    /* TOAST */
+    .toast-sucesso {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        background: #1f5f8b;
+        color: white;
+        padding: 14px 22px;
+        border-radius: 10px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0;
+        z-index: 2000;
+        pointer-events: none;
+        transition: 0.3s ease;
+    }
+
+    .toast-sucesso.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* MODAL */
+    .custom-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        color: #1a2e41;
+    }
+
+    .custom-modal.active {
+        display: flex;
+    }
+
+    .custom-modal-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+    }
+
+    .custom-modal-content {
+        position: relative;
+        background: #ffffff;
+        width: 92%;
+        max-width: 900px;
+        border-radius: 14px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+        animation: modalFade 0.25s ease;
+    }
+
+    .custom-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        background: #f5f8fb;
+        border-bottom: 1px solid #e3e3e3;
+    }
+
+    .custom-modal-header h5 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-align: center;
+        flex: 1;
+        color: #1f4e79b6;
+        /* para o h5 ocupar o espaço disponível */
+    }
+
+    .custom-close {
+        background: none;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .custom-close:hover {
+        transform: scale(1.2);
+    }
+
+    .custom-modal-body {
+        padding: 18px;
+        max-height: 75vh;
+        overflow-y: auto;
+    }
+
+    /* TABELA */
+    .agenda-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: fixed;
+        text-align: center;
+    }
+
+    .agenda-table th {
+        background: #2e557d;
+        color: white;
+        padding: 10px 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .agenda-table th:first-child,
+    .agenda-table td:first-child {
+        width: 80px;
+    }
+
+    .agenda-table td {
+        padding: 6px;
+        height: 55px;
+        vertical-align: middle;
+        border-bottom: 1px solid #e6e6e6;
+    }
+
+    .agenda-table tbody tr:nth-child(even) {
+        background: #f4f8fc;
+    }
+
+    .hora {
+        font-weight: 600;
+        background: #eef4fa;
+        font-size: 0.85rem;
+    }
+
+    /* BOTÕES */
+    .btn-agendar,
+    .btn-ocupado {
+        width: 100%;
+        min-height: 38px;
+        padding: 4px 6px;
+        font-size: 0.75rem;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        word-break: break-word;
+        transition: 0.2s ease;
+        gap: 4px;
+        /* espaço entre ícone e texto */
+        flex-wrap: wrap;
+        /* permite quebrar em linhas se necessário */
+    }
+
+    .btn-agendar {
+        background: #d6e8f8;
+        border: 1px solid #4a90e2;
+        color: #1f4e79;
+        cursor: pointer;
+    }
+
+    .btn-agendar:hover {
+        background: #c4ddf3;
+    }
+
+    .btn-ocupado {
+        background: #ff6b6b;
+        border: none;
+        color: white;
+        cursor: not-allowed;
+    }
+
+    @media (max-width:768px) {
+
+        .agenda-table th,
+        .agenda-table td {
+            font-size: 0.75rem;
+            padding: 4px;
+        }
+
+        .agenda-table td {
+            height: 50px;
+        }
+
+        .btn-agendar,
+        .btn-ocupado {
+            font-size: 0.65rem;
+            min-height: 34px;
+        }
+
+        .custom-modal-content {
+            width: 96%;
+        }
+    }
+
+    @keyframes modalFade {
+        from {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<!-- ===================== JS ===================== -->
+<script>
+    /* ===================== Modal ===================== */
+    const modal = document.getElementById('agendaModal');
+    const closeBtn = modal.querySelector('.custom-close');
+    const overlay = modal.querySelector('.custom-modal-overlay');
+
+    function abrirModal() {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fecharModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    closeBtn.addEventListener('click', fecharModal);
+    overlay.addEventListener('click', fecharModal);
+
+    /* ===================== Título com mês ===================== */
+    const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho",
+        "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+    const dataAtual = new Date();
+    document.getElementById('modalTitle').textContent = `Agenda - ${meses[dataAtual.getMonth()]}`;
+
+    /* ===================== Toast ===================== */
+    function mostrarToast(msg) {
+        const toast = document.getElementById('mensagemSucesso');
+        toast.innerHTML = `<i class="bi bi-check-circle-fill"></i> ${msg}`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    /* ===================== Cliques das células ===================== */
+    function ativarCliqueCelas() {
+        document.querySelectorAll('.agenda-celula .btn-agendar').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (btn.textContent.trim() === 'Marcar') {
+                    const celula = btn.closest('.agenda-celula');
+                    const data = celula.dataset.dia;
+                    const hora = celula.dataset.hora;
+
+                    const hoje = new Date();
+                    const primeiroDiaSemana = new Date(hoje.setDate(hoje.getDate() - (hoje.getDay() -
+                        1)));
+                    const dataDesejada = new Date(primeiroDiaSemana);
+                    dataDesejada.setDate(primeiroDiaSemana.getDate() + (parseInt(data) - 1));
+
+                    const ano = dataDesejada.getFullYear();
+                    const mes = String(dataDesejada.getMonth() + 1).padStart(2, '0');
+                    const dia = String(dataDesejada.getDate()).padStart(2, '0');
+                    const dataFormatada = `${ano}-${mes}-${dia}`;
+
+                    document.getElementById('date').value = dataFormatada;
+                    document.getElementById('time').value = hora;
+
+                    mostrarToast(
+                        `Campos preenchidos com sucesso! Data: ${dataFormatada} Hora: ${hora}`);
+                    fecharModal();
+                }
+            });
+        });
+    }
+
+    /* ===================== AJAX para atualizar a tabela ===================== */
+    function atualizarTabelaAgenda() {
+        fetch("{{ route('agenda.semana') }}")
+            .then(res => res.json())
+            .then(data => {
+                // Primeiro, redefinir todas as células como livres
+                document.querySelectorAll('.agenda-celula').forEach(celula => {
+                    celula.innerHTML = `<button class="btn-agendar">
+                                            <i class="bi bi-check-circle-fill"></i> Marcar
+                                        </button>`;
+                });
+
+                // Marcar células ocupadas
+                data.forEach(agendamento => {
+                    const partes = agendamento.data_desejada.split('-');
+                    const dataAg = new Date(partes[0], partes[1] - 1, partes[2]);
+                    const diaSemana = dataAg.getDay(); // Domingo=0
+                    if (diaSemana === 0 || diaSemana > 5) return;
+
+                    const hora = agendamento.horario_desejado.substring(0, 5);
+                    const celula = document.querySelector(`[data-dia="${diaSemana}"][data-hora="${hora}"]`);
+                    if (celula) {
+                        celula.innerHTML = `<button class="btn-ocupado" disabled>
+                                                <i class="bi bi-x-circle-fill"></i> Ocupado ${hora} - ${agendamento.descricao_projeto || 'Sem descrição'}
+                                            </button>`;
+                    }
+                });
+
+                // Reativar cliques para células livres
+                ativarCliqueCelas();
+                abrirModal();
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Erro ao executar AJAX');
+            });
+    }
+
+    /* ===================== Botões ===================== */
+    document.getElementById('btnTestarAjax').addEventListener('click', atualizarTabelaAgenda);
+    document.getElementById('btnAbrirAgenda').addEventListener('click', atualizarTabelaAgenda);
+
+    /* Inicializa células */
+    ativarCliqueCelas();
+</script>
+<style>
+    /* ...seu CSS existente... */
+
+    /* Ajuste dos ícones dentro dos botões */
+    .btn-agendar i,
+    .btn-ocupado i {
+        margin-right: 4px;
+        font-size: 1rem;
+        vertical-align: middle;
+    }
+</style>
