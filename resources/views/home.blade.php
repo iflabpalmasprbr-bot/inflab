@@ -1123,16 +1123,16 @@
                     <p>infolab.palmas@ifpr.edu.br<br>
                         iflab.palmas@ifpr.edu.br</p>
                 </div>
-
+                <!--Div-->
                 <div class="contact-item">
                     <i class="fas fa-clock"></i>
                     <h3>Horário de Funcionamento</h3>
                     <p>Segunda a Sexta: 09h00 às 22h00<br>
-<<<<<<< HEAD
-                        sabado: 08h00 às 12h00</p>
-=======
-                        Sábado: 08h00 às 12h00</p>
->>>>>>> b94b7e9b34d3be9b4e88a670415a3f0622f38a5a
+                        <<<<<<< HEAD sabado: 08h00 às 12h00</p>
+                            =======
+                            Sábado: 08h00 às 12h00
+                    </p>
+                    >>>>>>> b94b7e9b34d3be9b4e88a670415a3f0622f38a5a
                 </div>
             </div>
         </div>
