@@ -1128,7 +1128,7 @@
                     <i class="fas fa-clock"></i>
                     <h3>Horário de Funcionamento</h3>
                     <p>Segunda a Sexta: 08h00 às 22h00<br>
-                        test: 08h00 às 12h00</p>
+                        sabado: 08h00 às 12h00</p>
                 </div>
             </div>
         </div>
