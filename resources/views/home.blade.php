@@ -1127,7 +1127,7 @@
                 <div class="contact-item">
                     <i class="fas fa-clock"></i>
                     <h3>Horário de Funcionamento</h3>
-                    <p>Segunda a Sexta: 08h00 às 22h00<br>
+                    <p>Segunda a Sexta: 09h00 às 22h00<br>
 <<<<<<< HEAD
                         sabado: 08h00 às 12h00</p>
 =======
