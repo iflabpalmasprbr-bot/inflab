@@ -109,4 +109,21 @@ class ForumController extends Controller
 
         return redirect()->route('forum.index')->with('success', 'Tópicos excluídos com sucesso!');
     }
+
+    public function excluirSelecionadas(Request $request, $topicoId)
+    {
+        $adminEmails = [
+            'carolbrm265@gmail.com',
+            'fernandes.junior@ifpr.edu.br',
+            'jean.gentilini@ifpr.edu.br'
+        ];
+
+        $ids = $request->input('conversas', []);
+
+        if (!empty($ids)) {
+            Conversa::whereIn('id', $ids)->delete();
+        }
+
+        return back()->with('success', 'Mensagens selecionadas excluídas com sucesso!');
+    }
 }

@@ -2,8 +2,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 
+
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eventos - IFLAB | IFPR Palmas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,6 +31,32 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        .btn-enviar {
+            background: linear-gradient(135deg, #007bff, #0056d2);
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-enviar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(135deg, #0069ff, #0043a8);
+        }
+
+        .btn-enviar:active {
+            transform: scale(0.96);
+        }
+
         body {
             color: var(--ifpr-text);
             overflow-x: hidden;
@@ -38,6 +67,36 @@
         .service-card {
             text-decoration: none;
             color: #333;
+        }
+
+        .btn-bloquear {
+            background: linear-gradient(135deg, #ff4b4b, #c82333);
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-bloquear i {
+            font-size: 16px;
+        }
+
+        .btn-bloquear:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(135deg, #ff3a3a, #a71d2a);
+        }
+
+        .btn-bloquear:active {
+            transform: scale(0.96);
         }
 
         /* ======================================
@@ -304,14 +363,12 @@
 </head>
 
 <body>
-
-
     <!-- Hero Section -->
     @if (session('success'))
-        <div id="mensagem-sucesso" class="mensagem-sucesso">
-            <span>{{ session('success') }}</span>
-            <button onclick="fecharMensagem()" class="fechar">&times;</button>
-        </div>
+    <div id="mensagem-sucesso" class="mensagem-sucesso">
+        <span>{{ session('success') }}</span>
+        <button onclick="fecharMensagem()" class="fechar">&times;</button>
+    </div>
     @endif
 
     <style>
@@ -404,15 +461,15 @@
 
             <!-- Ícone azul do chat -->
             @auth
-                <!-- Usuário logado: vai para o chat -->
-                <a href="{{ route('forum.index') }}" class="chat-float" title="Abrir Chat">
-                    <i class="fas fa-comment-dots"></i>
-                </a>
+            <!-- Usuário logado: vai para o chat -->
+            <a href="{{ route('forum.index') }}" class="chat-float" title="Abrir Chat">
+                <i class="fas fa-comment-dots"></i>
+            </a>
             @else
-                <!-- Usuário não logado: vai para login -->
-                <a href="{{ route('login') }}" class="chat-float" title="Faça login para acessar o chat">
-                    <i class="fas fa-comment-dots"></i>
-                </a>
+            <!-- Usuário não logado: vai para login -->
+            <a href="{{ route('login') }}" class="chat-float" title="Faça login para acessar o chat">
+                <i class="fas fa-comment-dots"></i>
+            </a>
             @endauth
 
             <a href="#agendamento" class="btn-primary">Agende seu uso</a>
@@ -609,25 +666,25 @@
                 <div class="carousel-track">
 
                     @foreach ($eventos as $evento)
-                        <a href="{{ route('eventos.show', $evento->id) }}" class="carousel-item event-card card-link"
-                            data-category="{{ $evento->categoria }}">
+                    <a href="{{ route('eventos.show', $evento->id) }}" class="carousel-item event-card card-link"
+                        data-category="{{ $evento->categoria }}">
 
-                            <div class="event-image">
-                                @if ($evento->imagem && Storage::disk('public')->exists($evento->imagem))
-                                    <img src="{{ Storage::url($evento->imagem) }}" alt="{{ $evento->titulo }}">
-                                @else
-                                    <div class="placeholder">Sem imagem</div>
-                                @endif
-                            </div>
+                        <div class="event-image">
+                            @if ($evento->imagem && Storage::disk('public')->exists($evento->imagem))
+                            <img src="{{ Storage::url($evento->imagem) }}" alt="{{ $evento->titulo }}">
+                            @else
+                            <div class="placeholder">Sem imagem</div>
+                            @endif
+                        </div>
 
-                            <div class="event-content">
-                                <span class="event-date">
-                                    {{ \Carbon\Carbon::parse($evento->data_evento)->format('d/m/Y') }}
-                                    às {{ \Carbon\Carbon::parse($evento->hora_evento)->format('H:i') }}
-                                </span>
-                                <h3>{{ $evento->titulo }}</h3>
-                            </div>
-                        </a>
+                        <div class="event-content">
+                            <span class="event-date">
+                                {{ \Carbon\Carbon::parse($evento->data_evento)->format('d/m/Y') }}
+                                às {{ \Carbon\Carbon::parse($evento->hora_evento)->format('H:i') }}
+                            </span>
+                            <h3>{{ $evento->titulo }}</h3>
+                        </div>
+                    </a>
                     @endforeach
 
                 </div>
@@ -637,14 +694,14 @@
         </div>
         <div class="filter-container">
             @auth
-                <!-- Verificação de usuário para adicionar evento -->
-                @if (strtolower(Auth::user()->email) === 'carolbrm265@gmail.com' ||
-                        strtolower(Auth::user()->email) === 'fernandes.junior@ifpr.edu.br' ||
-                        strtolower(Auth::user()->email) === 'jean.gentilini@ifpr.edu.br')
-                    <a href="{{ route('eventos.create') }}" class="Eventos-btn-componente">
-                        Cadastrar Novo Evento
-                    </a>
-                @endif
+            <!-- Verificação de usuário para adicionar evento -->
+            @if (strtolower(Auth::user()->email) === 'carolbrm265@gmail.com' ||
+            strtolower(Auth::user()->email) === 'fernandes.junior@ifpr.edu.br' ||
+            strtolower(Auth::user()->email) === 'jean.gentilini@ifpr.edu.br')
+            <a href="{{ route('eventos.create') }}" class="Eventos-btn-componente">
+                Cadastrar Novo Evento
+            </a>
+            @endif
             @endauth
         </div>
     </section>
@@ -917,6 +974,15 @@
                     transform: translate(-50%, 0);
                 }
             }
+
+            .explicacao {
+                color: red;
+                font-size: 14px;
+                font-family: Arial, Helvetica, sans-serif;
+                font-weight: 200;
+                text-align: justify;
+                margin-top: 1.5%;
+            }
         </style>
         <div id="mensagem-sucesso" class="mensagem-sucesso" style="display:none;">
             Seu agendamento foi enviado com sucesso!
@@ -933,7 +999,7 @@
                 </div>
                 <div class="form-group">
                     <label for="email">E-mail</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" value="{{ Auth::user()->email }}" readonly>
                 </div>
             </div>
 
@@ -994,14 +1060,58 @@
                 <textarea id="project" name="project"
                     placeholder="Descreva brevemente seu projeto, objetivos e o que você pretende produzir no laboratório..." required></textarea>
             </div>
-
+            <input type="text" name="status" id="status" value="Aberto" hidden>
             <div style="text-align: center;">
-                <button type="submit" class="btn-primary">Enviar Solicitação</button>
-                {{-- Div para mensagem de confirmação --}}
+                <button type="submit" class="btn-enviar">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    Enviar Solicitação
+                </button>
+                @auth
+                @if (strtolower(Auth::user()->email) === 'carolbrm265@gmail.com' ||
+                strtolower(Auth::user()->email) === 'fernandes.junior@ifpr.edu.br' ||
+                strtolower(Auth::user()->email) === 'jean.gentilini@ifpr.edu.br')
 
+                <button type="button" id="btnBloquearHorario" class="btn-bloquear">
+                    <i class="fa-solid fa-lock"></i>
+                    Bloquear Horário
+                </button>
+                <h6 class="explicacao">O recurso de bloqueio de horário serve para preencher automaticamente uma espécie de “ficha” e enviar o horário escolhido como aceito, atualizando a página em seguida.</h6>
+
+                @endif
+                @endauth
+                <script>
+                    document.getElementById('btnBloquearHorario').addEventListener('click', function() {
+
+                        const data = document.getElementById('date').value;
+                        const hora = document.getElementById('time').value;
+
+                        if (!data || !hora) {
+                            alert("Escolha primeiro um horário no calendário.");
+                            return;
+                        }
+
+                        document.getElementById('name').value = "HORÁRIO BLOQUEADO";
+                        document.getElementById('email').value = "admin@iflab.com";
+                        document.getElementById('phone').value = "000000000";
+
+                        document.getElementById('category').value = "teacher";
+                        document.getElementById('service').value = "other";
+
+                        document.getElementById('project').value = "Horário bloqueado pelo administrador";
+
+                        // 🔴 define o status
+                        document.getElementById('status').value = "Aceito";
+
+                        document.getElementById('bookingForm').submit();
+                    });
+                </script>
             </div>
-        </form>
+            {{-- Div para mensagem de confirmação --}}
+
     </div>
+
+    </form>
+
 
     <script>
         document.getElementById('bookingForm').addEventListener('submit', function() {

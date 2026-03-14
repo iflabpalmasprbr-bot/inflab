@@ -226,15 +226,45 @@
         <div class="conversas-box">
             <h3>Conversas</h3>
 
-            @foreach ($conversas as $conversa)
+            <form action="{{ route('forum.conversas.excluirSelecionadas', $topico->id) }}" method="POST">
+                @csrf
+                @method('DELETE')
+
+                @foreach ($conversas as $conversa)
                 <div class="conversa-card">
+                    @auth
+                    @if (in_array(strtolower(Auth::user()->email), [
+                    'carolbrm265@gmail.com',
+                    'fernandes.junior@ifpr.edu.br',
+                    'jean.gentilini@ifpr.edu.br'
+                    ]))
+                    <!-- Checkbox visível apenas para admins -->
+                    <input type="checkbox" name="conversas[]" value="{{ $conversa->id }}">
+                    @endif
+                    @endauth
+
                     <p style="font-size:1.05rem; color:#374151;">{{ $conversa->conteudo }}</p>
                     <p class="conversa-meta">
-                        <strong>{{ $conversa->autor }}</strong> —
-                        {{ $conversa->created_at->format('d/m/Y H:i') }}
+                        <strong>{{ $conversa->autor }}</strong> — {{ $conversa->created_at->format('d/m/Y H:i') }}
                     </p>
                 </div>
-            @endforeach
+                @endforeach
+
+                @auth
+                @if (in_array(strtolower(Auth::user()->email), [
+                'carolbrm265@gmail.com',
+                'fernandes.junior@ifpr.edu.br',
+                'jean.gentilini@ifpr.edu.br'
+                ]))
+                <button type="submit" class="btn-enviar" style="background:#ef4444; margin-top:12px;">
+                    Excluir Selecionadas
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                @endif
+                @endauth
+            </form>
         </div>
 
         <div class="form-box">

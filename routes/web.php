@@ -103,3 +103,9 @@ Route::get('/agenda/semana', [AgendamentoController::class, 'agenda_semana'])
     ->name('agenda.semana');
 Route::post('/comentario-update', [AgendamentoController::class, 'update_comentario'])
     ->name('update.comentario');
+Route::post('/agenda/bloquear', [AgendamentoController::class, 'bloquear'])
+    ->name('agenda.bloquear');
+
+Route::delete('/forum/{topico}/conversas/excluir', [ForumController::class, 'excluirSelecionadas'])
+    ->name('forum.conversas.excluirSelecionadas')
+    ->middleware('auth');

@@ -73,7 +73,7 @@ class AgendamentoController extends Controller
             'data_desejada' => $validated['date'],
             'horario_desejado' => $validated['time'],
             'descricao_projeto' => $validated['project'],
-            'status' => 'Aberto', // valor padrão inicial
+            'status' => $request->status, // valor padrão inicial
             'comentario' => $request->comentario, // valor padrão inicial
         ]);
 
