@@ -999,7 +999,9 @@
                 </div>
                 <div class="form-group">
                     <label for="email">E-mail</label>
+                    @if(Auth::check())
                     <input type="email" id="email" name="email" value="{{ Auth::user()->email }}" readonly>
+                    @endif
                 </div>
             </div>
 
