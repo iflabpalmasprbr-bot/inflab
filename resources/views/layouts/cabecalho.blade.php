@@ -733,108 +733,115 @@
 
 
                     @guest
-                        <a href="{{ route('login') }}" class="btn-blue">Login</a>
+                    <a href="{{ route('login') }}" class="btn-blue btn-login">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
                     @endguest
 
                     @auth
-                        <div class="nav-logout">
-                            <span class="user-name">{{ Auth::user()->name }}</span>
-                            <form method="POST" action="{{ route('logout') }}" class="logout-form">
-                                @csrf
-                                <button type="submit">Log out</button>
-                            </form>
-                        </div>
+                    <div class="nav-logout">
+                        <span class="user-name">{{ Auth::user()->name }}</span>
+                        <form method="POST" action="{{ route('logout') }}" class="logout-form">
+                            @csrf
+                            <button type="submit">Log out</button>
+                        </form>
+                    </div>
 
-                        @php
-                            $countAg = \App\Models\Agendamento::count();
-                        @endphp
+                    @php
+                    $countAg = \App\Models\Agendamento::count();
+                    @endphp
 
-                        <li class="menu-notificacao">
-                            <a href="{{ route('agendamentos.index') }}">
-                                <i class="fas fa-bell"></i>
-                                @if ($countAg > 0)
-                                    <span class="badge">{{ $countAg }}</span>
-                                @endif
-                            </a>
-                        </li>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', () => {
-                                const badge = document.querySelector('.menu-notificacao .badge');
-                                const linkNotificacao = document.querySelector('.menu-notificacao a');
+                    <li class="menu-notificacao">
+                        <a href="{{ route('agendamentos.index') }}">
+                            <i class="fas fa-bell"></i>
+                            @if ($countAg > 0)
+                            <span class="badge">{{ $countAg }}</span>
+                            @endif
+                        </a>
+                    </li>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const badge = document.querySelector('.menu-notificacao .badge');
+                            const linkNotificacao = document.querySelector('.menu-notificacao a');
 
-                                // Pegamos o total de notificações do backend
-                                const totalNotificacoes = {{ $countAg ?? 0 }};
+                            // Pegamos o total de notificações do backend
+                            const totalNotificacoes = <?= $countAg ?? 0 ?>;
 
-                                // Pegamos do localStorage quantas notificações já foram vistas
-                                let vistas = parseInt(localStorage.getItem('notificacoesVistas') || '0');
+                            // Pegamos do localStorage quantas notificações já foram vistas
+                            let vistas = parseInt(localStorage.getItem('notificacoesVistas') || '0');
 
-                                // Se houver novas notificações, mostra o badge com a diferença
-                                if (totalNotificacoes > vistas) {
-                                    if (badge) {
-                                        badge.style.display = 'inline-block';
-                                        badge.textContent = totalNotificacoes - vistas;
-                                    }
-                                } else {
-                                    // Se não houver novas notificações, esconde o badge
+                            // Se houver novas notificações, mostra o badge com a diferença
+                            if (totalNotificacoes > vistas) {
+                                if (badge) {
+                                    badge.style.display = 'inline-block';
+                                    badge.textContent = totalNotificacoes - vistas;
+                                }
+                            } else {
+                                // Se não houver novas notificações, esconde o badge
+                                if (badge) badge.style.display = 'none';
+                            }
+
+                            // Ao clicar na notificação
+                            if (linkNotificacao) {
+                                linkNotificacao.addEventListener('click', () => {
+                                    // Marca todas as notificações como vistas
+                                    localStorage.setItem('notificacoesVistas', totalNotificacoes);
                                     if (badge) badge.style.display = 'none';
-                                }
-
-                                // Ao clicar na notificação
-                                if (linkNotificacao) {
-                                    linkNotificacao.addEventListener('click', () => {
-                                        // Marca todas as notificações como vistas
-                                        localStorage.setItem('notificacoesVistas', totalNotificacoes);
-                                        if (badge) badge.style.display = 'none';
-                                    });
-                                }
-                            });
-                        </script>
-                        <style>
-                            .nav-logout {
-                                display: flex;
-                                align-items: center;
-                                gap: 14px;
-                                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                                font-size: 14px;
-                                color: #ffffff;
-                                padding: 6px 10px;
-                                background: #3c75af;
-                                /* leve fundo para separar do menu */
-                                border-radius: 8px;
-                                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-                                transition: all 0.3s ease;
+                                });
                             }
+                        });
+                    </script>
+                    <style>
+                        .btn-login i,
+                        .btn-login svg {
+                            margin-right: 6px;
+                        }
 
-                            .nav-logout:hover {
-                                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-                            }
+                        .nav-logout {
+                            display: flex;
+                            align-items: center;
+                            gap: 14px;
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            font-size: 14px;
+                            color: #ffffff;
+                            padding: 6px 10px;
+                            background: #3c75af;
+                            /* leve fundo para separar do menu */
+                            border-radius: 8px;
+                            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+                            transition: all 0.3s ease;
+                        }
 
-                            .user-name {
-                                font-weight: 600;
-                                color: #ffffff;
-                                white-space: nowrap;
-                            }
+                        .nav-logout:hover {
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                        }
 
-                            .logout-form button {
-                                background: #fff;
-                                border: 1px solid #5982b7;
-                                color: #416ba1;
-                                padding: 6px 14px;
-                                border-radius: 6px;
-                                cursor: pointer;
-                                font-size: 13px;
-                                font-weight: 500;
-                                transition: all 0.3s ease;
-                                min-width: 70px;
-                            }
+                        .user-name {
+                            font-weight: 600;
+                            color: #ffffff;
+                            white-space: nowrap;
+                        }
 
-                            .logout-form button:hover {
-                                background: #1a73e8;
-                                color: #fff;
-                                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-                                transform: translateY(-1px);
-                            }
-                        </style>
+                        .logout-form button {
+                            background: #fff;
+                            border: 1px solid #5982b7;
+                            color: #416ba1;
+                            padding: 6px 14px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-size: 13px;
+                            font-weight: 500;
+                            transition: all 0.3s ease;
+                            min-width: 70px;
+                        }
+
+                        .logout-form button:hover {
+                            background: #1a73e8;
+                            color: #fff;
+                            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+                            transform: translateY(-1px);
+                        }
+                    </style>
 
                     @endauth
 
