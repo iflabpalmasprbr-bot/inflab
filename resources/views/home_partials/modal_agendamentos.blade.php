@@ -23,11 +23,11 @@
                     <thead>
                         <tr>
                             <th>Horário</th>
-                            <th>Segunda</th>
-                            <th>Terça</th>
-                            <th>Quarta</th>
-                            <th>Quinta</th>
-                            <th>Sexta</th>
+                            <th class="col-dia">Segunda <br><small style="font-weight: normal; font-size: 0.8em;"></small></th>
+                            <th class="col-dia">Terça <br><small style="font-weight: normal; font-size: 0.8em;"></small></th>
+                            <th class="col-dia">Quarta <br><small style="font-weight: normal; font-size: 0.8em;"></small></th>
+                            <th class="col-dia">Quinta <br><small style="font-weight: normal; font-size: 0.8em;"></small></th>
+                            <th class="col-dia">Sexta <br><small style="font-weight: normal; font-size: 0.8em;"></small></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -342,15 +342,8 @@
                 e.preventDefault();
 
                 const celula = btn.closest('.agenda-celula');
-                const diaId = celula.dataset.dia;
+                const dataFormatada = btn.getAttribute('data-full-date');
                 const hora = celula.dataset.hora;
-
-                // Lógica da Data
-                const hoje = new Date();
-                const primeiroDiaSemana = new Date(hoje.setDate(hoje.getDate() - (hoje.getDay() - 1)));
-                const dataDesejada = new Date(primeiroDiaSemana);
-                dataDesejada.setDate(primeiroDiaSemana.getDate() + (parseInt(diaId) - 1));
-                const dataFormatada = dataDesejada.toISOString().split('T')[0];
 
                 const item = {
                     data: dataFormatada,
@@ -358,93 +351,93 @@
                 };
 
                 if (!isAdmin) {
-                    // --- COMPORTAMENTO USUÁRIO COMUM ---
-                    // Limpa seleções visuais anteriores
-                    document.querySelectorAll('.btn-agendar.selecionado').forEach(el => {
-                        el.classList.remove('selecionado');
-                        el.style.background = "#d6e8f8";
-                        el.style.color = "#1f4e79";
-                        el.innerHTML = '<i class="bi bi-check-circle-fill"></i> Marcar';
-                    });
+                    // LÓGICA USUÁRIO COMUM (Seleção única)
+                    btn.innerHTML = `<i class="bi bi-ui-checks"></i> Selecionado <br> ${dataFormatada.split('-').reverse().join('/')}`;
 
-                    horáriosSelecionados = [item]; // Apenas um horário permitido
-
-                    // Marca visualmente o botão clicado
-                    btn.classList.add('selecionado');
-                    btn.style.background = "#1f4e79";
-                    btn.style.color = "white";
-                    btn.innerHTML = '<i class="bi bi-ui-checks"></i> Selecionado';
-
-                    // Preenche os campos e fecha
                     if (document.getElementById('date')) document.getElementById('date').value = dataFormatada;
                     if (document.getElementById('time')) document.getElementById('time').value = hora;
 
                     mostrarToast("Horário selecionado!");
-                    setTimeout(() => fecharModal(), 400);
-
+                    setTimeout(() => fecharModal(), 600);
                 } else {
-                    // --- COMPORTAMENTO ADMIN ---
-                    const index = horáriosSelecionados.findIndex(i => i.data === dataFormatada && i.hora === hora);
+                    // LÓGICA ADMIN (Seleção Múltipla)
+                    // 1. Verifica se já está selecionado para marcar ou desmarcar
+                    const index = horáriosSelecionados.findIndex(i => i.data === item.data && i.hora === item.hora);
 
                     if (index > -1) {
+                        // Se já existir, remove da lista (desmarcar)
                         horáriosSelecionados.splice(index, 1);
                         btn.classList.remove('selecionado');
-                        btn.style.background = "#d6e8f8";
+                        btn.style.background = "#d6e8f8"; // Volta cor original
                         btn.style.color = "#1f4e79";
-                        btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Marcar';
+                        btn.innerHTML = `<i class="bi bi-calendar-check"></i> ${dataFormatada.split('-').reverse().slice(0,2).join('/')} <br> Marcar`;
                     } else {
+                        // Se não existir, adiciona na lista (marcar)
                         horáriosSelecionados.push(item);
                         btn.classList.add('selecionado');
-                        btn.style.background = "#1f4e79";
+                        btn.style.background = "#1f4e79"; // Cor de destaque Admin
                         btn.style.color = "white";
-                        btn.innerHTML = '<i class="bi bi-ui-checks"></i> Selecionado';
+                        btn.innerHTML = `<i class="bi bi-check-lg"></i> Selecionado <br> ${hora}`;
                     }
 
-                    // O Admin não fecha o modal aqui. Ele usa o botão "Confirmar Seleção" que adicionamos no HTML.
-                    console.log("Admin selecionando múltiplos:", horáriosSelecionados);
+                    console.log("Selecionados pelo Admin:", horáriosSelecionados);
                 }
             });
         });
     }
-
     /* ===================== AJAX para atualizar a tabela ===================== */
     function atualizarTabelaAgenda() {
         fetch("{{ route('agenda.semana') }}")
             .then(res => res.json())
             .then(data => {
-                // Primeiro, redefinir todas as células como livres
+                const hoje = new Date();
+                const diaSemanaAtual = hoje.getDay();
+                // Lógica de virada: se for domingo, pula para a próxima segunda
+                let diasParaSegunda = (diaSemanaAtual === 0) ? 1 : 1 - diaSemanaAtual;
+
+                const segundaFeira = new Date(hoje);
+                segundaFeira.setDate(hoje.getDate() + diasParaSegunda);
+
+                // 1. Limpar e Preencher células com a data correta
                 document.querySelectorAll('.agenda-celula').forEach(celula => {
-                    celula.innerHTML = `<button class="btn-agendar">
-                                            <i class="bi bi-check-circle-fill"></i> Marcar
-                                        </button>`;
+                    const diaOffset = parseInt(celula.dataset.dia) - 1; // 0 para Segunda, 1 para Terça...
+                    const dataBotao = new Date(segundaFeira);
+                    dataBotao.setDate(segundaFeira.getDate() + diaOffset);
+
+                    const diaF = dataBotao.getDate().toString().padStart(2, '0');
+                    const mesF = (dataBotao.getMonth() + 1).toString().padStart(2, '0');
+                    const anoF = dataBotao.getFullYear();
+                    const dataExibicao = `${diaF}/${mesF}/${anoF}`;
+
+                    celula.innerHTML = `
+                    <button class="btn-agendar" data-full-date="${dataBotao.toISOString().split('T')[0]}">
+                        <i class="bi bi-calendar-check"></i> ${dataExibicao} <br> Marcar
+                    </button>`;
                 });
 
-                // Marcar células ocupadas
+                // 2. Marcar células ocupadas (mantendo sua lógica original)
                 data.forEach(agendamento => {
                     const partes = agendamento.data_desejada.split('-');
                     const dataAg = new Date(partes[0], partes[1] - 1, partes[2]);
-                    const diaSemana = dataAg.getDay(); // Domingo=0
+                    const diaSemana = dataAg.getDay();
                     if (diaSemana === 0 || diaSemana > 5) return;
 
                     const hora = agendamento.horario_desejado.substring(0, 5);
                     const celula = document.querySelector(`[data-dia="${diaSemana}"][data-hora="${hora}"]`);
                     if (celula) {
-                        celula.innerHTML = `<button class="btn-ocupado" disabled>
-                                                <i class="bi bi-x-circle-fill"></i> Ocupado ${hora} - ${agendamento.descricao_projeto || 'Sem descrição'}
-                                            </button>`;
+                        celula.innerHTML = `
+                        <button class="btn-ocupado" disabled>
+                            <i class="bi bi-x-circle-fill"></i> Ocupado ${hora}
+                        </button>`;
                     }
                 });
 
-                // Reativar cliques para células livres
                 ativarCliqueCelas();
                 abrirModal();
+                atualizarDatasCabecalho(); // Chama a função do topo também
             })
-            .catch(err => {
-                console.error(err);
-                alert('Erro ao executar AJAX');
-            });
+            .catch(err => console.error(err));
     }
-
     /* ===================== Botões ===================== */
     document.getElementById('btnTestarAjax').addEventListener('click', atualizarTabelaAgenda);
     document.getElementById('btnAbrirAgenda').addEventListener('click', atualizarTabelaAgenda);
@@ -452,6 +445,36 @@
     /* Inicializa células */
     ativarCliqueCelas();
 </script>
+<script>
+    function atualizarDatasCabecalho() {
+        const nomesDias = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+        const hoje = new Date();
+        const diaSemanaAtual = hoje.getDay(); // 0 = Domingo, 1 = Segunda...
+
+        // LÓGICA DA VIRADA: 
+        // Se for Domingo (0), somamos 1 dia para ir para a próxima segunda.
+        // Se for de Segunda (1) a Sábado (6), subtraímos para voltar à segunda desta semana.
+        let diasParaSegunda = (diaSemanaAtual === 0) ? 1 : 1 - diaSemanaAtual;
+
+        // Opcional: Se quiseres que a virada ocorra já no SÁBADO, usa esta linha em vez da de cima:
+        // let diasParaSegunda = (diaSemanaAtual === 0 || diaSemanaAtual === 6) ? (diaSemanaAtual === 0 ? 1 : 2) : 1 - diaSemanaAtual;
+
+        const segundaFeira = new Date(hoje);
+        segundaFeira.setDate(hoje.getDate() + diasParaSegunda);
+
+        document.querySelectorAll('.col-dia').forEach((th, index) => {
+            const dataAlvo = new Date(segundaFeira);
+            dataAlvo.setDate(segundaFeira.getDate() + index);
+
+            const diaMes = dataAlvo.getDate().toString().padStart(2, '0');
+            const mes = (dataAlvo.getMonth() + 1).toString().padStart(2, '0');
+
+            // Atualiza o conteúdo do TH com o Nome + Data
+            th.innerHTML = `${nomesDias[index]} <br><small style="font-weight: normal; opacity: 0.8;">${diaMes}/${mes}</small>`;
+        });
+    }
+</script>
+
 <style>
     /* ...seu CSS existente... */
 
