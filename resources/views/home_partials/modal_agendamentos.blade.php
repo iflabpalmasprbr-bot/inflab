@@ -32,23 +32,31 @@
                     </thead>
                     <tbody>
                         @php
-                            $horas = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
+                        $horas = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
                         @endphp
                         @foreach ($horas as $hora)
-                            <tr>
-                                <td class="hora"><strong>{{ $hora }}</strong></td>
-                                @for ($dia = 1; $dia <= 5; $dia++)
-                                    <td class="agenda-celula" data-dia="{{ $dia }}"
-                                        data-hora="{{ $hora }}">
-                                        <button type="button" class="btn-agendar">Marcar</button>
-                                    </td>
+                        <tr>
+                            <td class="hora"><strong>{{ $hora }}</strong></td>
+                            @for ($dia = 1; $dia <= 5; $dia++)
+                                <td class="agenda-celula" data-dia="{{ $dia }}"
+                                data-hora="{{ $hora }}">
+                                <button type="button" class="btn-agendar">Marcar</button>
+                                </td>
                                 @endfor
-                            </tr>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
+        @if(in_array(strtolower(Auth::user()->email ?? ''), ['carolbrm265@gmail.com', 'fernandes.junior@ifpr.edu.br', 'jean.gentilini@ifpr.edu.br']))
+        <div class="custom-modal-footer" style="padding: 15px; border-top: 1px solid #eee; text-align: right; background: #f9f9f9;">
+            <button type="button" class="btn-confirmar-admin" onclick="fecharModal()" style="background: #1f4e79; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                <i class="bi bi-check-all"></i> Confirmar Seleção
+            </button>
+        </div>
+        @endif
+
     </div>
 </div>
 
@@ -311,31 +319,89 @@
     }
 
     /* ===================== Cliques das células ===================== */
+
+    // 1. Definição Global (fora das funções)
+    if (typeof horáriosSelecionados === 'undefined') {
+        var horáriosSelecionados = [];
+    }
+
+    // 2. Lista de Admins (usando a sua lógica de e-mail)
+    const listaAdmins = [
+        'carolbrm265@gmail.com',
+        'fernandes.junior@ifpr.edu.br',
+        'jean.gentilini@ifpr.edu.br'
+    ];
+    const emailUsuario = "{{ strtolower(Auth::user()->email ?? '') }}";
+    const isAdmin = listaAdmins.includes(emailUsuario);
+
     function ativarCliqueCelas() {
         document.querySelectorAll('.agenda-celula .btn-agendar').forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (btn.textContent.trim() === 'Marcar') {
-                    const celula = btn.closest('.agenda-celula');
-                    const data = celula.dataset.dia;
-                    const hora = celula.dataset.hora;
+            btn.onclick = null;
 
-                    const hoje = new Date();
-                    const primeiroDiaSemana = new Date(hoje.setDate(hoje.getDate() - (hoje.getDay() -
-                        1)));
-                    const dataDesejada = new Date(primeiroDiaSemana);
-                    dataDesejada.setDate(primeiroDiaSemana.getDate() + (parseInt(data) - 1));
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
 
-                    const ano = dataDesejada.getFullYear();
-                    const mes = String(dataDesejada.getMonth() + 1).padStart(2, '0');
-                    const dia = String(dataDesejada.getDate()).padStart(2, '0');
-                    const dataFormatada = `${ano}-${mes}-${dia}`;
+                const celula = btn.closest('.agenda-celula');
+                const diaId = celula.dataset.dia;
+                const hora = celula.dataset.hora;
 
-                    document.getElementById('date').value = dataFormatada;
-                    document.getElementById('time').value = hora;
+                // Lógica da Data
+                const hoje = new Date();
+                const primeiroDiaSemana = new Date(hoje.setDate(hoje.getDate() - (hoje.getDay() - 1)));
+                const dataDesejada = new Date(primeiroDiaSemana);
+                dataDesejada.setDate(primeiroDiaSemana.getDate() + (parseInt(diaId) - 1));
+                const dataFormatada = dataDesejada.toISOString().split('T')[0];
 
-                    mostrarToast(
-                        `Campos preenchidos com sucesso! Data: ${dataFormatada} Hora: ${hora}`);
-                    fecharModal();
+                const item = {
+                    data: dataFormatada,
+                    hora: hora
+                };
+
+                if (!isAdmin) {
+                    // --- COMPORTAMENTO USUÁRIO COMUM ---
+                    // Limpa seleções visuais anteriores
+                    document.querySelectorAll('.btn-agendar.selecionado').forEach(el => {
+                        el.classList.remove('selecionado');
+                        el.style.background = "#d6e8f8";
+                        el.style.color = "#1f4e79";
+                        el.innerHTML = '<i class="bi bi-check-circle-fill"></i> Marcar';
+                    });
+
+                    horáriosSelecionados = [item]; // Apenas um horário permitido
+
+                    // Marca visualmente o botão clicado
+                    btn.classList.add('selecionado');
+                    btn.style.background = "#1f4e79";
+                    btn.style.color = "white";
+                    btn.innerHTML = '<i class="bi bi-ui-checks"></i> Selecionado';
+
+                    // Preenche os campos e fecha
+                    if (document.getElementById('date')) document.getElementById('date').value = dataFormatada;
+                    if (document.getElementById('time')) document.getElementById('time').value = hora;
+
+                    mostrarToast("Horário selecionado!");
+                    setTimeout(() => fecharModal(), 400);
+
+                } else {
+                    // --- COMPORTAMENTO ADMIN ---
+                    const index = horáriosSelecionados.findIndex(i => i.data === dataFormatada && i.hora === hora);
+
+                    if (index > -1) {
+                        horáriosSelecionados.splice(index, 1);
+                        btn.classList.remove('selecionado');
+                        btn.style.background = "#d6e8f8";
+                        btn.style.color = "#1f4e79";
+                        btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Marcar';
+                    } else {
+                        horáriosSelecionados.push(item);
+                        btn.classList.add('selecionado');
+                        btn.style.background = "#1f4e79";
+                        btn.style.color = "white";
+                        btn.innerHTML = '<i class="bi bi-ui-checks"></i> Selecionado';
+                    }
+
+                    // O Admin não fecha o modal aqui. Ele usa o botão "Confirmar Seleção" que adicionamos no HTML.
+                    console.log("Admin selecionando múltiplos:", horáriosSelecionados);
                 }
             });
         });

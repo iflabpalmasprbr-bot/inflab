@@ -1082,29 +1082,69 @@
                 @endif
                 @endauth
                 <script>
-                    document.getElementById('btnBloquearHorario').addEventListener('click', function() {
+                    document.getElementById('btnBloquearHorario').addEventListener('click', async function() {
+                        // 1. Verifica se temos horários selecionados no array global
+                        // Se o array estiver vazio, tenta pegar o que estiver nos inputs (caso o admin tenha clicado em apenas um)
+                        if (typeof horáriosSelecionados === 'undefined' || horáriosSelecionados.length === 0) {
+                            const d = document.getElementById('date').value;
+                            const h = document.getElementById('time').value;
+                            if (d && h && h !== "--:--" && !d.includes("Múltiplos")) {
+                                horáriosSelecionados = [{
+                                    data: d,
+                                    hora: h
+                                }];
+                            }
+                        }
 
-                        const data = document.getElementById('date').value;
-                        const hora = document.getElementById('time').value;
-
-                        if (!data || !hora) {
-                            alert("Escolha primeiro um horário no calendário.");
+                        if (horáriosSelecionados.length === 0) {
+                            alert("Por favor, selecione ao menos um horário no calendário primeiro.");
                             return;
                         }
 
-                        document.getElementById('name').value = "HORÁRIO BLOQUEADO";
-                        document.getElementById('email').value = "admin@iflab.com";
-                        document.getElementById('phone').value = "000000000";
+                        // 2. Feedback visual de carregamento
+                        const btn = this;
+                        const originalText = btn.innerHTML;
+                        btn.disabled = true;
+                        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Bloqueando ${horáriosSelecionados.length} horários...`;
 
-                        document.getElementById('category').value = "teacher";
-                        document.getElementById('service').value = "other";
+                        // 3. Dados padrão para o bloqueio
+                        const token = document.querySelector('input[name="_token"]').value;
+                        const url = "{{ route('agendamento.store') }}";
 
-                        document.getElementById('project').value = "Horário bloqueado pelo administrador";
+                        // 4. Loop de envio (um por um para aproveitar sua rota .store atual)
+                        try {
+                            for (const item of horáriosSelecionados) {
+                                const formData = new FormData();
+                                formData.append('_token', token);
+                                formData.append('name', "HORÁRIO BLOQUEADO");
+                                formData.append('email', "admin@iflab.com");
+                                formData.append('phone', "000000000");
+                                formData.append('category', "teacher");
+                                formData.append('service', "other");
+                                formData.append('project', "Bloqueio administrativo em lote");
+                                formData.append('date', item.data);
+                                formData.append('time', item.hora);
+                                formData.append('status', "Aceito"); // Garante que apareça no calendário
 
-                        // 🔴 define o status
-                        document.getElementById('status').value = "Aceito";
+                                await fetch(url, {
+                                    method: "POST",
+                                    body: formData,
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                });
+                            }
 
-                        document.getElementById('bookingForm').submit();
+                            // 5. Sucesso final
+                            alert("Bloqueios realizados com sucesso!");
+                            window.location.reload();
+
+                        } catch (error) {
+                            console.error("Erro no bloqueio:", error);
+                            alert("Ocorreu um erro ao processar um dos horários.");
+                            btn.disabled = false;
+                            btn.innerHTML = originalText;
+                        }
                     });
                 </script>
             </div>
