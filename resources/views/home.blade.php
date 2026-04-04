@@ -586,7 +586,7 @@
                         </ul>
                     </div>
                 </a>
-                <!---teste-->
+                <!---alteraçao git->
                 <a href="{{ route('comunidade') }}" class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-users"></i>
