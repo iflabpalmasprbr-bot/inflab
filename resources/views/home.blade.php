@@ -365,10 +365,10 @@
 <body>
     <!-- Hero Section -->
     @if (session('success'))
-    <div id="mensagem-sucesso" class="mensagem-sucesso">
-        <span>{{ session('success') }}</span>
-        <button onclick="fecharMensagem()" class="fechar">&times;</button>
-    </div>
+        <div id="mensagem-sucesso" class="mensagem-sucesso">
+            <span>{{ session('success') }}</span>
+            <button onclick="fecharMensagem()" class="fechar">&times;</button>
+        </div>
     @endif
 
     <style>
@@ -461,15 +461,15 @@
 
             <!-- Ícone azul do chat -->
             @auth
-            <!-- Usuário logado: vai para o chat -->
-            <a href="{{ route('forum.index') }}" class="chat-float" title="Abrir Chat">
-                <i class="fas fa-comment-dots"></i>
-            </a>
+                <!-- Usuário logado: vai para o chat -->
+                <a href="{{ route('forum.index') }}" class="chat-float" title="Abrir Chat">
+                    <i class="fas fa-comment-dots"></i>
+                </a>
             @else
-            <!-- Usuário não logado: vai para login -->
-            <a href="{{ route('login') }}" class="chat-float" title="Faça login para acessar o chat">
-                <i class="fas fa-comment-dots"></i>
-            </a>
+                <!-- Usuário não logado: vai para login -->
+                <a href="{{ route('login') }}" class="chat-float" title="Faça login para acessar o chat">
+                    <i class="fas fa-comment-dots"></i>
+                </a>
             @endauth
 
             <a href="#agendamento" class="btn-primary">Agende seu uso</a>
@@ -586,7 +586,7 @@
                         </ul>
                     </div>
                 </a>
-
+                <!---teste-->
                 <a href="{{ route('comunidade') }}" class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-users"></i>
@@ -666,25 +666,25 @@
                 <div class="carousel-track">
 
                     @foreach ($eventos as $evento)
-                    <a href="{{ route('eventos.show', $evento->id) }}" class="carousel-item event-card card-link"
-                        data-category="{{ $evento->categoria }}">
+                        <a href="{{ route('eventos.show', $evento->id) }}" class="carousel-item event-card card-link"
+                            data-category="{{ $evento->categoria }}">
 
-                        <div class="event-image">
-                            @if ($evento->imagem && Storage::disk('public')->exists($evento->imagem))
-                            <img src="{{ Storage::url($evento->imagem) }}" alt="{{ $evento->titulo }}">
-                            @else
-                            <div class="placeholder">Sem imagem</div>
-                            @endif
-                        </div>
+                            <div class="event-image">
+                                @if ($evento->imagem && Storage::disk('public')->exists($evento->imagem))
+                                    <img src="{{ Storage::url($evento->imagem) }}" alt="{{ $evento->titulo }}">
+                                @else
+                                    <div class="placeholder">Sem imagem</div>
+                                @endif
+                            </div>
 
-                        <div class="event-content">
-                            <span class="event-date">
-                                {{ \Carbon\Carbon::parse($evento->data_evento)->format('d/m/Y') }}
-                                às {{ \Carbon\Carbon::parse($evento->hora_evento)->format('H:i') }}
-                            </span>
-                            <h3>{{ $evento->titulo }}</h3>
-                        </div>
-                    </a>
+                            <div class="event-content">
+                                <span class="event-date">
+                                    {{ \Carbon\Carbon::parse($evento->data_evento)->format('d/m/Y') }}
+                                    às {{ \Carbon\Carbon::parse($evento->hora_evento)->format('H:i') }}
+                                </span>
+                                <h3>{{ $evento->titulo }}</h3>
+                            </div>
+                        </a>
                     @endforeach
 
                 </div>
@@ -694,14 +694,14 @@
         </div>
         <div class="filter-container">
             @auth
-            <!-- Verificação de usuário para adicionar evento -->
-            @if (strtolower(Auth::user()->email) === 'carolbrm265@gmail.com' ||
-            strtolower(Auth::user()->email) === 'fernandes.junior@ifpr.edu.br' ||
-            strtolower(Auth::user()->email) === 'jean.gentilini@ifpr.edu.br')
-            <a href="{{ route('eventos.create') }}" class="Eventos-btn-componente">
-                Cadastrar Novo Evento
-            </a>
-            @endif
+                <!-- Verificação de usuário para adicionar evento -->
+                @if (strtolower(Auth::user()->email) === 'carolbrm265@gmail.com' ||
+                        strtolower(Auth::user()->email) === 'fernandes.junior@ifpr.edu.br' ||
+                        strtolower(Auth::user()->email) === 'jean.gentilini@ifpr.edu.br')
+                    <a href="{{ route('eventos.create') }}" class="Eventos-btn-componente">
+                        Cadastrar Novo Evento
+                    </a>
+                @endif
             @endauth
         </div>
     </section>
@@ -999,8 +999,9 @@
                 </div>
                 <div class="form-group">
                     <label for="email">E-mail</label>
-                    @if(Auth::check())
-                    <input type="email" id="email" name="email" value="{{ Auth::user()->email }}" readonly>
+                    @if (Auth::check())
+                        <input type="email" id="email" name="email" value="{{ Auth::user()->email }}"
+                            readonly>
                     @endif
                 </div>
             </div>
@@ -1069,17 +1070,17 @@
                     Enviar Solicitação
                 </button>
                 @auth
-                @if (strtolower(Auth::user()->email) === 'carolbrm265@gmail.com' ||
-                strtolower(Auth::user()->email) === 'fernandes.junior@ifpr.edu.br' ||
-                strtolower(Auth::user()->email) === 'jean.gentilini@ifpr.edu.br')
-
-                <button type="button" id="btnBloquearHorario" class="btn-bloquear">
-                    <i class="fa-solid fa-lock"></i>
-                    Bloquear Horário
-                </button>
-                <h6 class="explicacao">O recurso de bloqueio de horário serve para preencher automaticamente uma espécie de “ficha” e enviar o horário escolhido como aceito, atualizando a página em seguida.</h6>
-
-                @endif
+                    @if (strtolower(Auth::user()->email) === 'carolbrm265@gmail.com' ||
+                            strtolower(Auth::user()->email) === 'fernandes.junior@ifpr.edu.br' ||
+                            strtolower(Auth::user()->email) === 'jean.gentilini@ifpr.edu.br')
+                        <button type="button" id="btnBloquearHorario" class="btn-bloquear">
+                            <i class="fa-solid fa-lock"></i>
+                            Bloquear Horário
+                        </button>
+                        <h6 class="explicacao">O recurso de bloqueio de horário serve para preencher automaticamente uma
+                            espécie de “ficha” e enviar o horário escolhido como aceito, atualizando a página em seguida.
+                        </h6>
+                    @endif
                 @endauth
                 <script>
                     document.getElementById('btnBloquearHorario').addEventListener('click', async function() {
@@ -1105,7 +1106,8 @@
                         const btn = this;
                         const originalText = btn.innerHTML;
                         btn.disabled = true;
-                        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Bloqueando ${horáriosSelecionados.length} horários...`;
+                        btn.innerHTML =
+                            `<i class="fa-solid fa-spinner fa-spin"></i> Bloqueando ${horáriosSelecionados.length} horários...`;
 
                         // 3. Dados padrão para o bloqueio
                         const token = document.querySelector('input[name="_token"]').value;
