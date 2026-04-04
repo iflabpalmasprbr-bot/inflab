@@ -65,11 +65,19 @@
                     style="background: #1f4e79; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">
                     <i class="bi bi-check-all"></i> Confirmar Seleção
                 </button>
+                <button id="btnModo">Selecionar vários horários</button>
+                <h6 class="info-modo">
+                    Use este botão para ativar a seleção de vários horários ao mesmo tempo.
+                </h6>
             </div>
+
+
+
         @endif
 
     </div>
 </div>
+
 
 <!-- ===================== CSS ===================== -->
 <style>
@@ -77,6 +85,43 @@
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+    }
+
+    #btnModo {
+        background: #d6e8f8;
+        color: #1f4e79;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    /* hover */
+    #btnModo:hover {
+        background: #1f4e79;
+        color: white;
+    }
+
+    /* quando estiver ativo (modo múltiplo) */
+    #btnModo.ativo {
+        background: #1f4e79;
+        color: white;
+        box-shadow: 0 0 0 2px rgba(31, 78, 121, 0.2);
+    }
+
+    .info-modo {
+        color: #1f4e79;
+        font-size: 13px;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    /* efeito clique */
+    #btnModo:active {
+        transform: scale(0.97);
     }
 
     .custom-modal-header h5 i {
@@ -345,6 +390,19 @@
     const emailUsuario = "{{ strtolower(Auth::user()->email ?? '') }}";
     const isAdmin = listaAdmins.includes(emailUsuario);
 
+    let modoMultiplo = false; // 🔥 controla o tipo de seleção
+
+    // 🔘 botão de alternar modo
+    document.getElementById('btnModo')?.addEventListener('click', function() {
+        modoMultiplo = !modoMultiplo;
+
+        this.innerText = modoMultiplo ?
+            "Modo múltiplo ATIVO" :
+            "Selecionar vários horários";
+
+        this.classList.toggle('ativo');
+    });
+
     function ativarCliqueCelas() {
         document.querySelectorAll('.agenda-celula .btn-agendar').forEach(btn => {
             btn.onclick = null;
@@ -362,7 +420,7 @@
                 };
 
                 if (!isAdmin) {
-                    // LÓGICA USUÁRIO COMUM (Seleção única)
+                    // 🔵 USUÁRIO NORMAL (1 só)
                     btn.innerHTML =
                         `<i class="bi bi-ui-checks"></i> Selecionado <br> ${dataFormatada.split('-').reverse().join('/')}`;
 
@@ -372,36 +430,56 @@
 
                     mostrarToast("Horário selecionado!");
                     setTimeout(() => fecharModal(), 600);
-                } else {
-                    // LÓGICA ADMIN (Seleção Múltipla)
-                    const index = horáriosSelecionados.findIndex(i => i.data === item.data && i.hora ===
-                        item.hora);
 
-                    if (index > -1) {
-                        // Desmarcar
-                        horáriosSelecionados.splice(index, 1);
+                } else {
+
+                    const selecionado = btn.classList.contains('selecionado');
+
+                    if (selecionado) {
+                        // 🔴 DESMARCAR
+                        horáriosSelecionados = horáriosSelecionados.filter(i =>
+                            !(i.data === item.data && i.hora === item.hora)
+                        );
+
                         btn.classList.remove('selecionado');
                         btn.style.background = "#d6e8f8";
                         btn.style.color = "#1f4e79";
                         btn.innerHTML =
                             `<i class="bi bi-calendar-check"></i> ${dataFormatada.split('-').reverse().slice(0,2).join('/')} <br> Marcar`;
+
                     } else {
-                        // Marcar
+
+                        // 🔵 MODO NORMAL → só 1
+                        if (!modoMultiplo && horáriosSelecionados.length >= 1) {
+
+                            document.querySelectorAll('.btn-agendar.selecionado').forEach(b => {
+                                b.classList.remove('selecionado');
+                                b.style.background = "#d6e8f8";
+                                b.style.color = "#1f4e79";
+
+                                const oldDate = b.getAttribute('data-full-date');
+                                b.innerHTML =
+                                    `<i class="bi bi-calendar-check"></i> ${oldDate.split('-').reverse().slice(0,2).join('/')} <br> Marcar`;
+                            });
+
+                            horáriosSelecionados = [];
+                        }
+
+                        // 🟢 MARCAR (normal ou múltiplo)
                         horáriosSelecionados.push(item);
+
                         btn.classList.add('selecionado');
                         btn.style.background = "#1f4e79";
                         btn.style.color = "white";
                         btn.innerHTML = `<i class="bi bi-check-lg"></i> Selecionado <br> ${hora}`;
 
-                        // --- NOVA LÓGICA: Preenche o formulário se for o primeiro item selecionado ---
-                        if (horáriosSelecionados.length === 1) {
-                            if (document.getElementById('date')) document.getElementById('date').value =
-                                dataFormatada;
-                            if (document.getElementById('time')) document.getElementById('time').value =
-                                hora;
-                            mostrarToast("Primeiro horário definido no formulário!");
-                        }
+                        // atualiza formulário (sempre último clicado)
+                        if (document.getElementById('date')) document.getElementById('date').value =
+                            dataFormatada;
+                        if (document.getElementById('time')) document.getElementById('time').value =
+                            hora;
                     }
+
                     console.log("Selecionados pelo Admin:", horáriosSelecionados);
                 }
             });
