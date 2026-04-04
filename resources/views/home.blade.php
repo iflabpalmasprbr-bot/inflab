@@ -455,7 +455,7 @@
 
     <section class="hero">
         <div class="container">
-            <h2>IFLAB - Laboratório de Fabricação, Robótica e Prototipagem</h2>
+            <h2>LABORATORIO - Laboratório de Fabricação, Robótica e Prototipagem</h2>
             <p>Um espaço inovador para desenvolvimento de projetos, experimentação e aprendizado prático em tecnologias
                 de fabricação digital, robótica e eletrônica.</p>
 
