@@ -459,7 +459,7 @@
             <p>Um espaço inovador para desenvolvimento de projetos, experimentação e aprendizado prático em tecnologias
                 de fabricação digital, robótica e eletrônica.</p>
 
-            <!--  azul do -->
+            <!--  azul  -->
             @auth
             <!-- Usuário logado: vai para o chat -->
             <a href="{{ route('forum.index') }}" class="chat-float" title="Abrir Chat">
