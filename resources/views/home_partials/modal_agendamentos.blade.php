@@ -407,7 +407,7 @@
         const botoes = document.querySelectorAll('.agenda-celula .btn-agendar');
 
         botoes.forEach(btn => {
-            btn.onclick = null;
+            btn.onclick = null; // Limpa eventos anteriores
 
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -416,73 +416,65 @@
                 const dataISO = btn.getAttribute('data-full-date');
                 const hora = celula.dataset.hora;
 
-                // Inputs do formulário
                 const inputData = document.getElementById('date');
                 const inputHora = document.getElementById('time');
 
+                // isAdmin deve ser definido no topo do Blade
                 if (!isAdmin) {
-                    // --- USUÁRIO COMUM ---
                     if (inputData) inputData.value = dataISO;
                     if (inputHora) inputHora.value = hora;
 
                     btn.innerHTML = `<i class="bi bi-ui-checks"></i> Selecionado <br> ${hora}`;
                     mostrarToast("Horário selecionado!");
                     setTimeout(() => fecharModal(), 600);
-
                 } else {
-                    // --- ADMIN ---
+                    // Lógica Admin
                     const item = {
                         data: dataISO,
                         hora: hora
                     };
                     const jaSelecionado = btn.classList.contains('selecionado');
 
-                    // Criar a string de data legível (DD/MM) para exibir ao desmarcar
-                    const dataPartes = dataISO.split('-');
-                    const dataExibicaoCurta = `${dataPartes[2]}/${dataPartes[1]}`;
+                    // Formata data para exibição (DD/MM)
+                    const partes = dataISO.split('-');
+                    const dataExibicaoCurta = `${partes[2]}/${partes[1]}`;
 
                     if (jaSelecionado) {
-                        // 🔴 DESMARCAR
-                        horáriosSelecionados = horáriosSelecionados.filter(i => !(i.data === item
-                            .data && i.hora === item.hora));
+                        // DESMARCAR
+                        horáriosSelecionados = horáriosSelecionados.filter(i =>
+                            !(i.data === dataISO && i.hora === hora)
+                        );
 
                         btn.classList.remove('selecionado');
                         btn.style.background = "#d6e8f8";
                         btn.style.color = "#1f4e79";
-
-                        // CORREÇÃO AQUI: Mantém a data visível mesmo ao desmarcar
                         btn.innerHTML =
                             `<i class="bi bi-calendar-check"></i> ${dataExibicaoCurta} <br> Marcar`;
-
-                        if (!modoMultiplo) {
-                            if (inputData) inputData.value = "";
-                            if (inputHora) inputHora.value = "";
-                        }
                     } else {
-                        // 🟢 MARCAR
+                        // MARCAR
                         if (!modoMultiplo) {
+                            // Se não for múltiplo, limpa os outros
                             document.querySelectorAll('.btn-agendar.selecionado').forEach(b => {
                                 const dOld = b.getAttribute('data-full-date').split('-');
-                                const dOldFormat = `${dOld[2]}/${dOld[1]}`;
-
                                 b.classList.remove('selecionado');
                                 b.style.background = "#d6e8f8";
                                 b.style.color = "#1f4e79";
                                 b.innerHTML =
-                                    `<i class="bi bi-calendar-check"></i> ${dOldFormat} <br> Marcar`;
+                                    `<i class="bi bi-calendar-check"></i> ${dOld[2]}/${dOld[1]} <br> Marcar`;
                             });
                             horáriosSelecionados = [];
                         }
 
                         horáriosSelecionados.push(item);
-                        if (inputData) inputData.value = dataISO;
-                        if (inputHora) inputHora.value = hora;
-
                         btn.classList.add('selecionado');
                         btn.style.background = "#1f4e79";
                         btn.style.color = "white";
                         btn.innerHTML = `<i class="bi bi-check-lg"></i> Selecionado <br> ${hora}`;
                     }
+
+                    // Atualiza inputs (opcional para admin)
+                    if (inputData) inputData.value = dataISO;
+                    if (inputHora) inputHora.value = hora;
                 }
             });
         });
