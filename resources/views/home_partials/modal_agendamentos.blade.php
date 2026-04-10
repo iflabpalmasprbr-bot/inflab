@@ -404,83 +404,85 @@
     });
 
     function ativarCliqueCelas() {
-        document.querySelectorAll('.agenda-celula .btn-agendar').forEach(btn => {
+        const botoes = document.querySelectorAll('.agenda-celula .btn-agendar');
+
+        botoes.forEach(btn => {
             btn.onclick = null;
 
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
 
                 const celula = btn.closest('.agenda-celula');
-                const dataFormatada = btn.getAttribute('data-full-date');
+                const dataISO = btn.getAttribute('data-full-date');
                 const hora = celula.dataset.hora;
 
-                const item = {
-                    data: dataFormatada,
-                    hora: hora
-                };
+                // Inputs do formulário
+                const inputData = document.getElementById('date');
+                const inputHora = document.getElementById('time');
 
                 if (!isAdmin) {
-                    // 🔵 USUÁRIO NORMAL (1 só)
-                    btn.innerHTML =
-                        `<i class="bi bi-ui-checks"></i> Selecionado <br> ${dataFormatada.split('-').reverse().join('/')}`;
+                    // --- USUÁRIO COMUM ---
+                    if (inputData) inputData.value = dataISO;
+                    if (inputHora) inputHora.value = hora;
 
-                    if (document.getElementById('date')) document.getElementById('date').value =
-                        dataFormatada;
-                    if (document.getElementById('time')) document.getElementById('time').value = hora;
-
+                    btn.innerHTML = `<i class="bi bi-ui-checks"></i> Selecionado <br> ${hora}`;
                     mostrarToast("Horário selecionado!");
                     setTimeout(() => fecharModal(), 600);
 
                 } else {
+                    // --- ADMIN ---
+                    const item = {
+                        data: dataISO,
+                        hora: hora
+                    };
+                    const jaSelecionado = btn.classList.contains('selecionado');
 
-                    const selecionado = btn.classList.contains('selecionado');
+                    // Criar a string de data legível (DD/MM) para exibir ao desmarcar
+                    const dataPartes = dataISO.split('-');
+                    const dataExibicaoCurta = `${dataPartes[2]}/${dataPartes[1]}`;
 
-                    if (selecionado) {
+                    if (jaSelecionado) {
                         // 🔴 DESMARCAR
-                        horáriosSelecionados = horáriosSelecionados.filter(i =>
-                            !(i.data === item.data && i.hora === item.hora)
-                        );
+                        horáriosSelecionados = horáriosSelecionados.filter(i => !(i.data === item
+                            .data && i.hora === item.hora));
 
                         btn.classList.remove('selecionado');
                         btn.style.background = "#d6e8f8";
                         btn.style.color = "#1f4e79";
+
+                        // CORREÇÃO AQUI: Mantém a data visível mesmo ao desmarcar
                         btn.innerHTML =
-                            `<i class="bi bi-calendar-check"></i> ${dataFormatada.split('-').reverse().slice(0,2).join('/')} <br> Marcar`;
+                            `<i class="bi bi-calendar-check"></i> ${dataExibicaoCurta} <br> Marcar`;
 
+                        if (!modoMultiplo) {
+                            if (inputData) inputData.value = "";
+                            if (inputHora) inputHora.value = "";
+                        }
                     } else {
-
-                        // 🔵 MODO NORMAL → só 1
-                        if (!modoMultiplo && horáriosSelecionados.length >= 1) {
-
+                        // 🟢 MARCAR
+                        if (!modoMultiplo) {
                             document.querySelectorAll('.btn-agendar.selecionado').forEach(b => {
+                                const dOld = b.getAttribute('data-full-date').split('-');
+                                const dOldFormat = `${dOld[2]}/${dOld[1]}`;
+
                                 b.classList.remove('selecionado');
                                 b.style.background = "#d6e8f8";
                                 b.style.color = "#1f4e79";
-
-                                const oldDate = b.getAttribute('data-full-date');
                                 b.innerHTML =
-                                    `<i class="bi bi-calendar-check"></i> ${oldDate.split('-').reverse().slice(0,2).join('/')} <br> Marcar`;
+                                    `<i class="bi bi-calendar-check"></i> ${dOldFormat} <br> Marcar`;
                             });
-
                             horáriosSelecionados = [];
                         }
 
-                        // 🟢 MARCAR (normal ou múltiplo)
                         horáriosSelecionados.push(item);
+                        if (inputData) inputData.value = dataISO;
+                        if (inputHora) inputHora.value = hora;
 
                         btn.classList.add('selecionado');
                         btn.style.background = "#1f4e79";
                         btn.style.color = "white";
                         btn.innerHTML = `<i class="bi bi-check-lg"></i> Selecionado <br> ${hora}`;
-
-                        // atualiza formulário (sempre último clicado)
-                        if (document.getElementById('date')) document.getElementById('date').value =
-                            dataFormatada;
-                        if (document.getElementById('time')) document.getElementById('time').value =
-                            hora;
                     }
-
-                    console.log("Selecionados pelo Admin:", horáriosSelecionados);
                 }
             });
         });
@@ -499,22 +501,25 @@
                 segundaFeira.setDate(hoje.getDate() + diasParaSegunda);
 
                 // 1. Limpar e Preencher células com a data correta
+                // Dentro do .then(data => { ... })
                 document.querySelectorAll('.agenda-celula').forEach(celula => {
-                    const diaOffset = parseInt(celula.dataset.dia) - 1; // 0 para Segunda, 1 para Terça...
+                    const diaOffset = parseInt(celula.dataset.dia) - 1;
                     const dataBotao = new Date(segundaFeira);
                     dataBotao.setDate(segundaFeira.getDate() + diaOffset);
 
-                    const diaF = dataBotao.getDate().toString().padStart(2, '0');
-                    const mesF = (dataBotao.getMonth() + 1).toString().padStart(2, '0');
-                    const anoF = dataBotao.getFullYear();
-                    const dataExibicao = `${diaF}/${mesF}/${anoF}`;
+                    // Formatação segura YYYY-MM-DD
+                    const y = dataBotao.getFullYear();
+                    const m = (dataBotao.getMonth() + 1).toString().padStart(2, '0');
+                    const d = dataBotao.getDate().toString().padStart(2, '0');
+                    const dataISO = `${y}-${m}-${d}`;
+
+                    const dataExibicao = `${d}/${m}/${y}`;
 
                     celula.innerHTML = `
-                    <button class="btn-agendar" data-full-date="${dataBotao.toISOString().split('T')[0]}">
-                        <i class="bi bi-calendar-check"></i> ${dataExibicao} <br> Marcar
-                    </button>`;
+        <button type="button" class="btn-agendar" data-full-date="${dataISO}">
+            <i class="bi bi-calendar-check"></i> ${dataExibicao} <br> Marcar
+        </button>`;
                 });
-
                 // 2. Marcar células ocupadas (mantendo sua lógica original)
                 data.forEach(agendamento => {
                     const partes = agendamento.data_desejada.split('-');
