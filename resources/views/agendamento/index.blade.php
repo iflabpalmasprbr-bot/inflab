@@ -52,7 +52,7 @@
         <div class="agendamento-container">
 
             {{-- =====  AGENDAMENTOS BLOQUEADOS (ADMIN@IFLAB.COM) ===== --}}
-            {{-- Botão Flutuante no Canto Inferior Direito --}}
+            {{-- Botão Flutuante no Canto Inferior -}}
             {{-- Botão Flutuante (Ícone no Canto) --}}
 
             @if ($showAll && $bloqueios->isNotEmpty())
