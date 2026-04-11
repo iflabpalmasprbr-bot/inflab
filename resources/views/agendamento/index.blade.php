@@ -51,7 +51,7 @@
     @else
         <div class="agendamento-container">
 
-            {{-- ===== SEÇÃO: AGENDAMENTOS BLOQUEADOS (ADMIN@IFLAB.COM) ===== --}}
+            {{-- =====  AGENDAMENTOS BLOQUEADOS (ADMIN@IFLAB.COM) ===== --}}
             {{-- Botão Flutuante no Canto Inferior Direito --}}
             {{-- Botão Flutuante (Ícone no Canto) --}}
 
