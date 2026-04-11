@@ -479,7 +479,7 @@
             });
         });
     }
-    /* ===================== AJAX para atualizar a tabela ===================== */
+    /* AJAX para atualizar a tabela ===================== */
     function atualizarTabelaAgenda() {
         fetch("{{ route('agenda.semana') }}")
             .then(res => res.json())
