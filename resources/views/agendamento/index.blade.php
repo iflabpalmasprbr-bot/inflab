@@ -55,7 +55,7 @@
             {{-- Botão Flutuante no Canto Inferior Direito --}}
             {{-- Botão Flutuante (Ícone no Canto) --}}
 
-            @if ($bloqueios->isNotEmpty())
+            @if ($showAll && $bloqueios->isNotEmpty())
                 <div id="btn-bloqueios-floating" title="Ver Horários Bloqueados">
                     <i class="fa fa-lock"></i>
                     <span class="badge-count">{{ $bloqueios->count() }}</span>
