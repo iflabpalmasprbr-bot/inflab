@@ -1,137 +1,23 @@
 @include('layouts.cabecalho')
-<!DOCTYPE html>
-<html lang="pt-br">
 
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Evento</title>
-    <style>
-        /* Encapsular todo o CSS dentro de .evento-form-page */
-        .evento-form-page {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            padding: 30px;
-        }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        .evento-form-page h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
+<div class="admin-form-container">
+    <div class="form-card">
 
-        .evento-form-page .back-btn {
-            max-width: 500px;
-            margin: 0 auto 20px;
-            text-align: left;
-        }
-
-        .evento-form-page .back-btn button {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            font-size: 14px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .evento-form-page .back-btn button:hover {
-            background-color: #5a6268;
-        }
-
-        .evento-form-page form {
-            background-color: #fff;
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .evento-form-page label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-        }
-
-        .evento-form-page input[type="text"],
-        .evento-form-page input[type="date"],
-        .evento-form-page input[type="time"],
-        .evento-form-page input[type="file"],
-        .evento-form-page select,
-        .evento-form-page textarea {
-            width: 100%;
-            padding: 8px 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        .evento-form-page textarea {
-            resize: vertical;
-        }
-
-        .evento-form-page button[type="submit"] {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .evento-form-page button[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-
-        .evento-form-page .alert {
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
-
-        .evento-form-page .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .evento-form-page .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        .evento-form-page ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-
-        @media (max-width: 480px) {
-            .evento-form-page form {
-                padding: 20px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <div class="evento-form-page">
-        <h2>Cadastrar Evento</h2>
-
-        <div class="back-btn">
-            <a href="{{ route('home') }}#eventos">
-                <button type="button">← Voltar para Home</button>
-            </a>
+        <div class="form-header">
+            <div class="header-content">
+                <a href="{{ route('home') }}#eventos" class="btn-back-link">
+                    <i class="fa-solid fa-chevron-left"></i> Voltar para a vitrine
+                </a>
+                <h2><i class="fa-solid fa-calendar-plus"></i> Novo Evento</h2>
+                <p>Preencha os detalhes abaixo para criar um novo evento no sistema.</p>
+            </div>
         </div>
 
-        <!-- Exibir mensagens de erro -->
         @if ($errors->any())
-            <div class="alert alert-error">
+            <div class="status-msg error">
+                <div class="msg-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
                 <ul>
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -140,43 +26,287 @@
             </div>
         @endif
 
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-        <form action="{{ route('eventos.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('eventos.store') }}" method="POST" enctype="multipart/form-data" class="modern-form">
             @csrf
 
-            <label for="titulo">Título:</label>
-            <input type="text" name="titulo" id="titulo" required>
+            <div class="input-group">
+                <label for="titulo">Título do Evento</label>
+                <input type="text" name="titulo" id="titulo" placeholder="Ex: Conferência Anual de Inovação"
+                    value="{{ old('titulo') }}" required>
+            </div>
 
-            <label for="descricao">Descrição:</label>
-            <textarea name="descricao" id="descricao" rows="3"></textarea>
+            <div class="input-group">
+                <label for="descricao">Descrição</label>
+                <textarea name="descricao" id="descricao" rows="4"
+                    placeholder="O que os participantes podem esperar deste evento?">{{ old('descricao') }}</textarea>
+            </div>
 
-            <label for="data_evento">Data do Evento:</label>
-            <input type="date" name="data_evento" id="data_evento" required>
+            <div class="row-inputs">
+                <div class="input-group">
+                    <label for="data_evento">Data de Realização</label>
+                    <input type="date" name="data_evento" id="data_evento" value="{{ old('data_evento') }}" required>
+                </div>
+                <div class="input-group">
+                    <label for="hora_evento">Horário de Início</label>
+                    <input type="time" name="hora_evento" id="hora_evento" value="{{ old('hora_evento') }}">
+                </div>
+            </div>
 
-            <label for="hora_evento">Hora do Evento:</label>
-            <input type="time" name="hora_evento" id="hora_evento">
+            <div class="input-group">
+                <label for="local">Local ou Link (Se Online)</label>
+                <div class="input-with-icon">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <input type="text" name="local" id="local" value="{{ old('local') }}"
+                        placeholder="Ex: Campus Central - Bloco A">
+                </div>
+            </div>
 
-            <label for="local">Local:</label>
-            <input type="text" name="local" id="local">
+            <div class="input-group">
+                <label for="status">Status Inicial</label>
+                <select name="status" id="status" class="custom-select">
+                    <option value="ativo" selected>🟢 Ativo (Publicar agora)</option>
+                    <option value="cancelado">🔴 Cancelado</option>
+                    <option value="concluido">🔵 Concluído</option>
+                </select>
+            </div>
 
-            <label for="status">Status:</label>
-            <select name="status" id="status">
-                <option value="ativo">Ativo</option>
-                <option value="cancelado">Cancelado</option>
-                <option value="concluido">Concluído</option>
-            </select>
+            <div class="input-group">
+                <label>Capa do Evento</label>
+                <div class="media-upload-area">
+                    <div class="upload-placeholder">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p>Clique ou arraste a imagem para upload</p>
+                    </div>
+                    <input type="file" name="imagem" id="imagem" class="file-input-hidden">
+                    <p class="file-hint">JPG ou PNG (Máx. 2MB)</p>
+                </div>
+            </div>
 
-            <label for="imagem">Imagem do Evento:</label>
-            <input type="file" name="imagem" id="imagem">
-
-            <button type="submit">Cadastrar</button>
+            <div class="form-footer">
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-rocket"></i> Publicar Evento
+                </button>
+            </div>
         </form>
     </div>
-</body>
-@include('layouts.footer')
+</div>
 
-</html>
+<style>
+    /* Variáveis e Reset */
+    :root {
+        --brand-color: #2563eb;
+        --brand-hover: #1d4ed8;
+        --bg-body: #f1f5f9;
+        --text-dark: #1e293b;
+        --text-light: #64748b;
+    }
+
+    .admin-form-container {
+        background-color: var(--bg-body);
+        padding: 50px 20px;
+        min-height: 100vh;
+        font-family: 'Inter', -apple-system, sans-serif;
+    }
+
+    .form-card {
+        max-width: 650px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    /* Header */
+    .form-header {
+        padding: 30px 40px 15px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .btn-back-link {
+        color: var(--text-light);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+
+    .btn-back-link:hover {
+        color: var(--brand-color);
+    }
+
+    .form-header h2 {
+        margin: 0;
+        font-size: 22px;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-header p {
+        color: var(--text-light);
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    /* Form Body */
+    .modern-form {
+        padding: 30px 40px;
+    }
+
+    .input-group {
+        margin-bottom: 18px;
+    }
+
+    .input-group label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .input-group input,
+    .input-group textarea,
+    .input-group select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: 0.2s;
+        background: #fff;
+    }
+
+    .input-group input:focus {
+        border-color: var(--brand-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        outline: none;
+    }
+
+    .row-inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    /* Icon Input */
+    .input-with-icon {
+        position: relative;
+    }
+
+    .input-with-icon i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    .input-with-icon input {
+        padding-left: 35px;
+    }
+
+    /* Upload Area */
+    .media-upload-area {
+        border: 2px dashed #cbd5e1;
+        background: #f8fafc;
+        padding: 25px;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .media-upload-area:hover {
+        background: #f1f5f9;
+        border-color: var(--brand-color);
+    }
+
+    .upload-placeholder i {
+        font-size: 32px;
+        color: var(--brand-color);
+        margin-bottom: 8px;
+    }
+
+    .upload-placeholder p {
+        font-size: 14px;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .file-hint {
+        font-size: 11px;
+        color: var(--text-light);
+        margin-top: 10px;
+    }
+
+    /* Botão Final */
+    .form-footer {
+        margin-top: 25px;
+        padding-top: 25px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-submit {
+        width: 100%;
+        background: var(--brand-color);
+        color: white;
+        border: none;
+        padding: 14px;
+        font-size: 15px;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: 0.2s;
+    }
+
+    .btn-submit:hover {
+        background: var(--brand-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    /* Alerts */
+    .status-msg.error {
+        margin: 20px 40px 0;
+        background: #fef2f2;
+        border-radius: 6px;
+        padding: 12px;
+        color: #991b1b;
+        display: flex;
+        gap: 12px;
+        font-size: 13px;
+        border-left: 4px solid #ef4444;
+    }
+
+    .status-msg ul {
+        margin: 0;
+        padding-left: 15px;
+    }
+
+    /* Responsivo */
+    @media (max-width: 500px) {
+        .row-inputs {
+            grid-template-columns: 1fr;
+        }
+
+        .modern-form {
+            padding: 20px;
+        }
+
+        .form-header {
+            padding: 20px;
+        }
+    }
+</style>
+
+@include('layouts.footer')
