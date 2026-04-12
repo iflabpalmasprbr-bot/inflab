@@ -574,7 +574,7 @@
 </script>
 
 <style>
-    /* ...seu CSS existente... */
+   
 
     /* Ajuste dos ícones dentro dos botões */
     .btn-agendar i,
