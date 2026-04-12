@@ -185,14 +185,19 @@ class AgendamentoController extends Controller
     }
     public function agenda_semana()
     {
-        $inicioSemana = now()->startOfWeek()->toDateString();
-        $fimSemana = now()->endOfWeek()->toDateString();
+        $hoje = now();
 
-        $agendamentos = Agendamento::whereBetween('data_desejada', [$inicioSemana, $fimSemana])
-            ->select('data_desejada', 'horario_desejado', 'descricao_projeto') // ✅ adiciona aqui
-            ->where('status', 'Aceito')
+        // sempre começa na segunda-feira da semana atual
+        $segunda = $hoje->copy()->startOfWeek(\Carbon\Carbon::MONDAY);
+        $domingo = $hoje->copy()->endOfWeek(\Carbon\Carbon::FRIDAY); // só dias úteis
+
+        $agendamentos = Agendamento::whereBetween('data_desejada', [
+            $segunda->toDateString(),
+            $domingo->toDateString()
+        ])
+            ->whereRaw('LOWER(TRIM(status)) = ?', ['aceito'])
             ->get();
-        //comntario
+
         return response()->json($agendamentos);
     }
     public function update_comentario(Request $request)
