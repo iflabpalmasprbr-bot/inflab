@@ -566,7 +566,7 @@
             const diaMes = dataAlvo.getDate().toString().padStart(2, '0');
             const mes = (dataAlvo.getMonth() + 1).toString().padStart(2, '0');
 
-            // Atualiza o conteúdo do TH com o Nome + Data
+            // Atualiza o conteúdo do TH com o Nome + 
             th.innerHTML =
                 `${nomesDias[index]} <br><small style="font-weight: normal; opacity: 0.8;">${diaMes}/${mes}</small>`;
         });
